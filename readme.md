@@ -1,5 +1,11 @@
 # BaselHack Code Repo Template
 
+## Challenge
+
+Our challenge is **Find my Bike Slot**, sponsored by Endress+Hauser.
+See the [challenge brief](documentation/challenge.md) for the problem,
+suggested features, available resources, and privacy restrictions.
+
 This is the template repository, which makes our lives (and especially the lives of the jury) easier,
 if you follow our structure.
 
