@@ -1,0 +1,23 @@
+{
+  "id": "curved-shelter-b",
+  "name": "Curved shelter B",
+  "kind": "curved_shelter",
+  "reference_photo": "assets/IMG_20261029_083657.jpg",
+  "shelter": {
+    "length": 6.2,
+    "depth": 2.0,
+    "height": 2.2,
+    "arches": 6,
+    "front_posts": 3
+  },
+  "racks": [
+    {
+      "id": "r1",
+      "slots": 13,
+      "start": 0.45,
+      "pitch": 0.42,
+      "rear_offset": 0.35,
+      "staggered": true
+    }
+  ]
+}

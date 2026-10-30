@@ -1,0 +1,31 @@
+name: BikeSlot
+options:
+  bundleIdPrefix: ch.baselhack
+  deploymentTarget:
+    iOS: "18.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  BikeSlot:
+    type: application
+    platform: iOS
+    sources: [BikeSlot]
+    info:
+      path: BikeSlot/Info.plist
+      properties:
+        CFBundleDisplayName: Bike Slot
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        CFBundleURLTypes:
+          - CFBundleURLName: ch.baselhack.bikeslot
+            CFBundleURLSchemes: [bikeslot]
+        # The hackathon backend runs over plain HTTP on a laptop.
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ch.baselhack.bikeslot
+        TARGETED_DEVICE_FAMILY: "1"
