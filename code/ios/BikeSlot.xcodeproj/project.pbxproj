@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04F0ABB95D39E6EC44773F0D /* LocationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB38E27D822D22D55527FBB7 /* LocationSearch.swift */; };
 		5916335985ACAACC792D95FE /* BikeSlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */; };
 		81A229D9F68C6733FD3FAB95 /* AreaDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD68C0F2D2B50F3B8D5135A /* AreaDetailScreen.swift */; };
 		A25F819556F02353B05C74CC /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DA5BE1C26A8F65605D2871 /* MapScreen.swift */; };
@@ -25,6 +26,7 @@
 		8F1D847DCB2CFEB86F74D37F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		8FD68C0F2D2B50F3B8D5135A /* AreaDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaDetailScreen.swift; sourceTree = "<group>"; };
 		A4C991959AFECC1AB9A4EBFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CB38E27D822D22D55527FBB7 /* LocationSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearch.swift; sourceTree = "<group>"; };
 		D513B4AAB57A88D9CD3184FA /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,6 +48,7 @@
 				6F702622BDB15F9640BF27CB /* AreaStore.swift */,
 				6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */,
 				A4C991959AFECC1AB9A4EBFD /* Info.plist */,
+				CB38E27D822D22D55527FBB7 /* LocationSearch.swift */,
 				18DA5BE1C26A8F65605D2871 /* MapScreen.swift */,
 				8F1D847DCB2CFEB86F74D37F /* Models.swift */,
 			);
@@ -120,6 +123,7 @@
 				F7D609E2D91DE2C678997D3F /* AreaScene.swift in Sources */,
 				A9AA37345AF5A145CB73A858 /* AreaStore.swift in Sources */,
 				5916335985ACAACC792D95FE /* BikeSlotApp.swift in Sources */,
+				04F0ABB95D39E6EC44773F0D /* LocationSearch.swift in Sources */,
 				A25F819556F02353B05C74CC /* MapScreen.swift in Sources */,
 				A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */,
 			);

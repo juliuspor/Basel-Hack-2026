@@ -23,6 +23,10 @@ Blender (code/scene-generator)                    Backend (code/backend)        
 - **App.** Map of the Endress+Hauser site in Reinach with live free counts, and a
   3D view per shelter with bikes on taken slots and green/red numbered markers.
   Shelter coordinates in `code/backend/data/areas.json` are placeholders.
+- **Search.** The search bar on the map finds shelters by name and places or
+  addresses through Apple Maps (biased to the area around the site). Picking a
+  place drops a marker there, frames it with the nearby shelters, and sorts the
+  shelter list by distance to it.
 
 ## Run it
 
