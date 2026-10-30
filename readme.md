@@ -6,6 +6,13 @@ Our challenge is **Find my Bike Slot**, sponsored by Endress+Hauser.
 See the [challenge brief](documentation/challenge.md) for the problem,
 suggested features, available resources, and privacy restrictions.
 
+## Prototype
+
+An iOS app shows the site map with live free bike spots and a 3D view of each
+shelter. Simulated cameras feed a backend that detects taken slots without
+storing images. See [how it fits together and how to run it](documentation/prototype.md)
+and the [scene generator](documentation/scene-generator.md).
+
 This is the template repository, which makes our lives (and especially the lives of the jury) easier,
 if you follow our structure.
 
