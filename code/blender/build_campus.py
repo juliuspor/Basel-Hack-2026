@@ -5,13 +5,14 @@ The OSM extract is a source of footprints and street geometry, not surveyed heig
 """
 from pathlib import Path
 from collections import Counter
-import math, random, xml.etree.ElementTree as ET
+import json, math, random, xml.etree.ElementTree as ET
 import bpy
 from mathutils import Vector
 from mathutils.geometry import tessellate_polygon
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'assets/campus-map/source.osm'
+ROOF_COLORS = ROOT / 'assets/campus-map/roof-colors.json'
 OUT = ROOT / 'assets/campus-map/scene.blend'
 PREVIEW = ROOT / 'assets/campus-map/overview.png'
 TOPDOWN = ROOT / 'assets/campus-map/topdown.png'
@@ -34,6 +35,7 @@ for el in tree.findall('way'):
     refs=[n.attrib['ref'] for n in el.findall('nd')]
     tags={t.attrib['k']:t.attrib['v'] for t in el.findall('tag')}
     ways.append((el.attrib['id'],refs,tags))
+roof_rgb_by_way=json.loads(ROOF_COLORS.read_text())['rgb_by_osm_way']
 
 # Keep the earlier study scene intact in the running Blender session.
 scene=bpy.data.scenes.new('Christoph-Merian-Ring Campus')
@@ -71,15 +73,21 @@ def mat(name,color,metal=0,rough=0.8,alpha=1):
         try:m.surface_render_method='DITHERED'
         except:pass
     return m
-asphalt=mat('Asphalt charcoal',(0.16,0.18,0.19))
-ring_asphalt=mat('Christoph Merian Ring asphalt',(0.12,0.15,0.17))
-sidewalk=mat('Concrete sidewalks',(0.47,0.48,0.46))
+asphalt=mat('Asphalt charcoal',(0.21,0.22,0.23))
+ring_asphalt=mat('Christoph Merian Ring asphalt',(0.18,0.19,0.20))
+sidewalk=mat('Concrete sidewalks',(0.38,0.39,0.40))
 base=mat('Campus ground',(0.37,0.40,0.37))
-grass=mat('Lawn',(0.24,0.34,0.22))
+grass=mat('Lawn',(0.26,0.31,0.25))
 stripe=mat('Road markings',(0.85,0.84,0.72))
 facades=[mat('Facade %02d'%i,c) for i,c in enumerate([(0.64,0.67,0.68),(0.73,0.73,0.69),(0.50,0.56,0.59),(0.68,0.66,0.62),(0.54,0.57,0.55)])]
+silver_facade=mat('South Ring silver panel facade',(0.70,0.72,0.73),0.15,0.6)
 roofs=[mat('Roof %02d'%i,c) for i,c in enumerate([(0.23,0.27,0.29),(0.39,0.43,0.45),(0.51,0.52,0.49),(0.32,0.36,0.38)])]
+def srgb_to_linear(value):
+    c=value/255
+    return c/12.92 if c<=0.04045 else ((c+0.055)/1.055)**2.4
+sampled_roofs={wid:mat('Aerial sampled roof OSM '+wid,tuple(srgb_to_linear(c) for c in rgb)) for wid,rgb in roof_rgb_by_way.items()}
 glass=mat('Tinted office glazing',(0.12,0.23,0.29),0.1,0.24)
+dark_band=mat('South Ring dark horizontal glazing',(0.10,0.14,0.17),0.08,0.3)
 steel=mat('Galvanized steel',(0.45,0.49,0.50),0.6,0.45)
 dark_steel=mat('Shelter frame',(0.22,0.26,0.29),0.6,0.45)
 translucent=mat('Frosted canopy',(0.57,0.70,0.72),0,0.35,0.62)
@@ -168,9 +176,13 @@ for wid,refs,tags in ways:
             try:h=float(tags.get('building:levels',''))*3.4
             except:h=7.5+min(16,math.sqrt(max(area,1))*0.18)
         h=max(3,min(42,h))
-        k=int(wid)%len(facades);ob=poly('Building OSM '+wid,pts,0.12,h,facades[k],roofs[int(wid)%len(roofs)],build_c)
+        k=int(wid)%len(facades)
+        roof_material=sampled_roofs.get(wid,roofs[int(wid)%len(roofs)])
+        wall_material=silver_facade if wid=='238805703' else facades[k]
+        ob=poly('Building OSM '+wid,pts,0.12,h,wall_material,roof_material,build_c)
         if ob:
             ob['osm_id']=wid;ob['height_source']='OSM' if 'height' in tags or 'building:levels' in tags else 'estimated from footprint'
+            ob['roof_color_source']='user supplied aerial screenshot' if wid in sampled_roofs else 'fallback palette'
             ob['height_m']=round(h,1);building_records.append((wid,cx,cy,h,area,pts));counts['buildings']+=1
     elif tags.get('building')=='roof' and refs[0]==refs[-1] and tags.get('amenity')!='bicycle_parking':
         ob=poly('Mapped roof '+wid,pts,3.6,3.86,steel,roofs[int(wid)%len(roofs)],build_c)
@@ -200,6 +212,22 @@ rng=random.Random(18)
 for wid,cx,cy,h,area,pts in building_records:
     if not (abs(cx)<195 and abs(cy)<175 and area>120):continue
     if abs(cx-xy(7.6003,LAT0)[0])>85 and abs(cx-xy(7.5988,LAT0)[0])>95:continue
+    if wid=='238805703':
+        # Street View (September 2023): pale panel frontage with long, dark
+        # horizontal glazing beside the south stretch of the Ring.
+        south_edge_y=min(p[1] for p in pts)
+        for edge_index,(a,b) in enumerate(zip(pts,pts[1:])):
+            length=math.dist(a,b)
+            if length<10 or (a[1]+b[1])/2>south_edge_y+10:continue
+            dx,dy=(b[0]-a[0])/length,(b[1]-a[1])/length
+            angle=math.atan2(dy,dx)
+            for z in (4.1,8.2,12.3,16.4):
+                if z+0.7>=h:continue
+                box('South Ring glazing band '+str(edge_index),
+                    (a[0]+b[0])/2,(a[1]+b[1])/2,z,
+                    length-0.8,0.11,0.9,dark_band,detail_c,angle)
+        counts['detailed_buildings']+=1
+        continue
     # Place glazing on actual footprint edges, rather than across a bounding box.
     n=min(5,max(1,int(h/4)))
     for edge_index,(a,b) in enumerate(zip(pts,pts[1:])):
@@ -255,6 +283,25 @@ for i in range(29):
     y=flat_min_y+1.3+i*1.75
     rack('North covered bicycle rack',flat_x,y,0.17,math.pi/2)
 counts['mapped_bicycle_roofs']=1
+
+# A separate short glass-and-steel shelter is visible at 35 Christoph
+# Merian-Ring in September 2023 Street View. Its purpose and dimensions
+# cannot be confirmed from the imagery, so keep it distinct from the
+# mapped 53 m bicycle roof and mark its measurements as approximate.
+sx,sy=xy(7.60004,47.486835)
+short_roof=box('South Ring short street shelter roof',sx,sy,2.73,7.2,2.55,0.16,steel,parking_c)
+short_roof['source']='Google Maps Street View, September 2023'
+short_roof['purpose']='unverified'
+short_roof['dimensions']='approximate from street imagery'
+for ox in (-3.35,3.35):
+    for oy in (-1.12,1.12):
+        box('South short shelter post',sx+ox,sy+oy,1.38,0.11,0.11,2.72,dark_steel,parking_c)
+for ox in (-1.72,1.72):
+    box('South short shelter glass panel',sx+ox,sy+1.17,1.38,3.3,0.055,2.55,translucent,parking_c)
+box('South short shelter bench',sx,sy+0.57,0.53,3.9,0.43,0.11,dark_steel,parking_c)
+for ox in (-1.7,1.7):
+    box('South short shelter bench support',sx+ox,sy+0.57,0.27,0.08,0.35,0.54,dark_steel,parking_c)
+counts['street_view_shelters']=1
 
 # The hearts are virtual wayfinding icons, not surveyed physical structures.
 north_lonlat=(7.60032,47.48815)
