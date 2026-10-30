@@ -1,6 +1,11 @@
 import CoreLocation
 import SwiftUI
 
+enum Site {
+    /// Endress+Hauser campus, Kägenstrasse, Reinach BL.
+    static let center = CLLocationCoordinate2D(latitude: 47.48872, longitude: 7.59805)
+}
+
 struct AreaSummary: Codable, Identifiable, Hashable {
     let id: String
     let name: String
