@@ -51,6 +51,14 @@ struct AreaDetail: Codable {
         case slots, personPresent, framesAnalyzed, framesSkipped
     }
 
+    init(summary: AreaSummary, slots: [Slot], personPresent: Bool, framesAnalyzed: Int, framesSkipped: Int) {
+        self.summary = summary
+        self.slots = slots
+        self.personPresent = personPresent
+        self.framesAnalyzed = framesAnalyzed
+        self.framesSkipped = framesSkipped
+    }
+
     init(from decoder: Decoder) throws {
         summary = try AreaSummary(from: decoder)
         let container = try decoder.container(keyedBy: CodingKeys.self)

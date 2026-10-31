@@ -377,10 +377,16 @@ private struct Stat: View {
 private struct SettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("backendURL") private var backendURL = APIClient.defaultURL
+    @AppStorage("demoMode") private var demoMode = false
 
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    Toggle("Demo data", isOn: $demoMode)
+                } footer: {
+                    Text("Built-in sample shelters that change every few seconds. No backend needed.")
+                }
                 Section {
                     TextField("Backend URL", text: $backendURL)
                         .keyboardType(.URL)
@@ -389,6 +395,7 @@ private struct SettingsSheet: View {
                 } footer: {
                     Text("Use your laptop's address, e.g. http://192.168.1.20:8000, when running on a phone.")
                 }
+                .disabled(demoMode)
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
