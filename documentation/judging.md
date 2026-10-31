@@ -203,8 +203,10 @@ All but the second print nothing.
   are AGPL-3.0 and only installed for a live camera
   ([`requirements-camera.txt`](../code/edge/requirements-camera.txt)). The deck
   bundles canvas-confetti with its
-  [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti). The campus
-  map data comes from OpenStreetMap under the ODbL, attributed in the
+  [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti), and its
+  architecture slide uses brand icons from Simple Icons under CC0. The marks
+  belong to their owners. The campus map data comes from OpenStreetMap under
+  the ODbL, attributed in the
   [readme](../readme.md#credits). The recorded frames are the hosts' photos.
   The Endress+Hauser symbol comes from endress.com and is used for the
   sponsor's own challenge. The diagrams are rendered with archify 3.2.0.
@@ -223,9 +225,9 @@ The deck, [`assets/pitch/index.html`](../assets/pitch/index.html), has four
 slides and one story: the 7:45 problem, the live demo, the pipeline, and a
 finale. It runs offline in a browser, and only its web fonts need a
 connection. Each slide has speaker notes
-([`NOTES`](../assets/pitch/index.html#L322-L327), press N). Press T for a
+([`NOTES`](../assets/pitch/index.html#L323-L328), press N). Press T for a
 three-minute timer that turns yellow at 2:30 and red at 3:00
-([`setInterval`](../assets/pitch/index.html#L351-L355)).
+([`setInterval`](../assets/pitch/index.html#L352-L356)).
 
 | Time | Slide | Focus |
 |---|---|---|
