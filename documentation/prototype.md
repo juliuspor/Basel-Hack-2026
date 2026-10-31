@@ -71,8 +71,11 @@ cd code/backend && .venv/bin/python simulate.py --interval 6
 cd code/ios && xcodegen generate
 ```
 
-   On a phone, set the backend URL in the app (gear icon) to your laptop's
-   address, e.g. `http://192.168.1.20:8000`, and pick your signing team in Xcode.
+   On a phone, pick your signing team in Xcode. Debug builds connect to the
+   backend on the Mac that built them (its Wi-Fi address is written into the app
+   at build time), so the phone must be on the same Wi-Fi and allowed Local
+   Network access. Rebuild after the Mac changes networks, or set another
+   address in the app's settings (gear icon).
 
    For UI work without steps 1 to 3, turn on **Demo data** in the app's settings
    or launch it with `-demoMode YES`.

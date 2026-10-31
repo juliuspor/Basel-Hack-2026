@@ -19,7 +19,11 @@ enum Backend {
 
 /// Talks to the Find my Bike Slot backend. The base URL can be changed in the app.
 struct APIClient: AreaService {
-    static let defaultURL = "http://localhost:8000"
+    /// Debug builds carry the address of the Mac that built them (set in project.yml),
+    /// so a phone finds the backend on that Mac without typing an IP.
+    static let defaultURL = Bundle.main.url(forResource: "backend-url", withExtension: "txt")
+        .flatMap { try? String(contentsOf: $0, encoding: .utf8) }?
+        .trimmingCharacters(in: .whitespacesAndNewlines) ?? "http://localhost:8000"
 
     static var baseURL: URL {
         let stored = UserDefaults.standard.string(forKey: "backendURL") ?? defaultURL

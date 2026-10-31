@@ -19,6 +19,7 @@
 		A25F819556F02353B05C74CC /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18DA5BE1C26A8F65605D2871 /* MapScreen.swift */; };
 		A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1D847DCB2CFEB86F74D37F /* Models.swift */; };
 		A9AA37345AF5A145CB73A858 /* AreaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F702622BDB15F9640BF27CB /* AreaStore.swift */; };
+		BDC8B737E3A2A76046AB7499 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75445123237505DA937E8C4 /* Theme.swift */; };
 		CC50590B9A1D1C6C8CDFC96E /* curved-shelter-a.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4138704B865DFCF9D0437DCB /* curved-shelter-a.usdz */; };
 		ED87FD01BED32BCC22ECC995 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513B4AAB57A88D9CD3184FA /* APIClient.swift */; };
 		F7D609E2D91DE2C678997D3F /* AreaScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479C75454FFABBB4B4411942 /* AreaScene.swift */; };
@@ -42,6 +43,7 @@
 		D54B5CFD9A92B76051F50A58 /* demo-areas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "demo-areas.json"; sourceTree = "<group>"; };
 		DBA2CCF773A67DE8973FD397 /* curved-shelter-c.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "curved-shelter-c.usdz"; sourceTree = "<group>"; };
 		E35DD876761F6561978866DA /* curved-shelter-b.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "curved-shelter-b.usdz"; sourceTree = "<group>"; };
+		F75445123237505DA937E8C4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -79,6 +81,7 @@
 				CB38E27D822D22D55527FBB7 /* LocationSearch.swift */,
 				18DA5BE1C26A8F65605D2871 /* MapScreen.swift */,
 				8F1D847DCB2CFEB86F74D37F /* Models.swift */,
+				F75445123237505DA937E8C4 /* Theme.swift */,
 				5CACA9FF2EE0E1E31BC9B33E /* Demo */,
 			);
 			path = BikeSlot;
@@ -101,6 +104,7 @@
 			buildPhases = (
 				7CA54B8C086D46F07D2EA292 /* Sources */,
 				746D4E9A36B68E315BFE72D1 /* Resources */,
+				92720208652D725B2FF6EF3D /* Point Debug builds at this Mac's backend */,
 			);
 			buildRules = (
 			);
@@ -158,6 +162,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		92720208652D725B2FF6EF3D /* Point Debug builds at this Mac's backend */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Point Debug builds at this Mac's backend";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "[ \"$CONFIGURATION\" = \"Debug\" ] || exit 0\nfor interface in en0 en1 en2; do\n  ip=$(ipconfig getifaddr \"$interface\") && break\ndone\n[ -n \"$ip\" ] || exit 0\necho \"http://$ip:8000\" > \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/backend-url.txt\"\necho \"backend-url.txt = http://$ip:8000\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		7CA54B8C086D46F07D2EA292 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -173,6 +199,7 @@
 				04F0ABB95D39E6EC44773F0D /* LocationSearch.swift in Sources */,
 				A25F819556F02353B05C74CC /* MapScreen.swift in Sources */,
 				A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */,
+				BDC8B737E3A2A76046AB7499 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +211,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = BikeSlot/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -200,6 +228,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = BikeSlot/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

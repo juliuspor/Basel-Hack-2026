@@ -12,7 +12,7 @@ struct AreaDetailScreen: View {
     var body: some View {
         let slots = detail?.slots ?? []
         ZStack {
-            LinearGradient(colors: [Color(red: 0.78, green: 0.86, blue: 0.95), Color(red: 0.93, green: 0.94, blue: 0.95)],
+            LinearGradient(colors: [Brand.blue.opacity(0.22), Color(hex: 0xF2F5F7)],
                            startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
 
@@ -63,11 +63,6 @@ private struct StatusCard: View {
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 Spacer()
-                if let time = summary.cameraTime {
-                    Label(time, systemImage: "video.fill")
-                        .font(.caption.weight(.semibold).monospacedDigit())
-                        .foregroundStyle(.red)
-                }
             }
             .animation(.snappy, value: summary.free)
 
@@ -78,7 +73,7 @@ private struct StatusCard: View {
                             .font(.caption.weight(.bold).monospacedDigit())
                             .frame(maxWidth: .infinity, minHeight: 28)
                             .foregroundStyle(.white)
-                            .background(slot.occupied ? Color.red : Color.green,
+                            .background(slot.occupied ? Brand.red : Brand.blue,
                                         in: RoundedRectangle(cornerRadius: 7, style: .continuous))
                     }
                 }
@@ -90,21 +85,6 @@ private struct StatusCard: View {
                     .font(.footnote)
                     .foregroundStyle(.orange)
             }
-
-            HStack(spacing: 4) {
-                Image(systemName: "lock.shield")
-                if let checked = summary.checkedDate {
-                    Text("Camera checked \(checked, style: .relative) ago · \(summary.analyzer)")
-                } else {
-                    Text("Waiting for the first camera frame")
-                }
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-
-            Text("Frames are analysed in memory and discarded. Only slot states are kept.")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
         }
         .padding(16)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))

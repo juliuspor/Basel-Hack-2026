@@ -33,7 +33,7 @@ struct MapScreen: View {
                 }
                 if let destination {
                     Marker(destination.name, systemImage: "building.2.fill", coordinate: destination.coordinate)
-                        .tint(.blue)
+                        .tint(Brand.blue)
                 }
             }
             .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll))
@@ -168,7 +168,7 @@ private struct StatusBar: View {
                         .lineLimit(1)
                 } else if let destination {
                     Label(destination.name, systemImage: "building.2.fill")
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Brand.blue)
                         .lineLimit(1)
                     Button(action: clearDestination) { Image(systemName: "xmark.circle.fill") }
                         .buttonStyle(.plain)
@@ -178,11 +178,6 @@ private struct StatusBar: View {
                     Label("\(store.totalFree) free spots", systemImage: "bicycle")
                         .contentTransition(.numericText())
                         .animation(.snappy, value: store.totalFree)
-                    if let time = store.cameraTime {
-                        Text(time)
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                    }
                 }
             }
             .font(.subheadline.weight(.semibold))
@@ -268,7 +263,7 @@ private struct AreaCard: View {
                 Text(area.name)
                     .font(.headline)
                     .lineLimit(1)
-                Text("\(free) of \(area.capacity) free" + (area.cameraTime.map { " · \($0)" } ?? ""))
+                Text("\(free) of \(area.capacity) free")
                     .font(.subheadline.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .contentTransition(.numericText())
@@ -281,7 +276,7 @@ private struct AreaCard: View {
             }
             .prominentGlassButton()
             .buttonBorderShape(.circle)
-            .tint(.green)
+            .tint(Brand.blue)
             .accessibilityLabel("View in 3D")
         }
     }
@@ -290,27 +285,27 @@ private struct AreaCard: View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 12) {
                 ShelterIcon(area: area, size: 44)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(area.name)
-                        .font(.title3.weight(.bold))
-                        .lineLimit(1)
-                    Text("Covered bike parking")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                Text(area.name)
+                    .font(.title3.weight(.bold))
+                    .lineLimit(1)
                 Spacer(minLength: 0)
             }
 
-            HStack(spacing: 0) {
-                Stat(title: "Free", value: free, tint: area.availability.color)
-                Divider().frame(height: 30)
-                Stat(title: "Taken", value: "\(area.occupied)/\(area.capacity)")
-                Divider().frame(height: 30)
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(free)
+                    .font(.system(size: 34, weight: .bold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(area.availability.color)
+                    .contentTransition(.numericText())
+                Text("of \(area.capacity) spots free")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                Spacer(minLength: 0)
+                // Only after searching for a place.
                 if let distance {
-                    Stat(title: "Distance", value: Measurement(value: distance, unit: UnitLength.meters)
+                    Text(Measurement(value: distance, unit: UnitLength.meters)
                         .formatted(.measurement(width: .abbreviated, usage: .road)))
-                } else {
-                    Stat(title: "Camera", value: area.cameraTime ?? "–")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
             }
             .animation(.snappy, value: area.free)
@@ -321,7 +316,7 @@ private struct AreaCard: View {
                         .frame(maxWidth: .infinity)
                 }
                 .prominentGlassButton()
-                .tint(.green)
+                .tint(Brand.blue)
                 Button(action: directions) {
                     Label("Directions", systemImage: "bicycle")
                         .frame(maxWidth: .infinity)
@@ -355,25 +350,6 @@ private struct ShelterIcon: View {
     }
 }
 
-private struct Stat: View {
-    let title: String
-    let value: String
-    var tint: Color = .primary
-
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(title.uppercased())
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.title3.weight(.semibold).monospacedDigit())
-                .foregroundStyle(tint)
-                .contentTransition(.numericText())
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
 private struct SettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("backendURL") private var backendURL = APIClient.defaultURL
@@ -393,7 +369,7 @@ private struct SettingsSheet: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                 } footer: {
-                    Text("Use your laptop's address, e.g. http://192.168.1.20:8000, when running on a phone.")
+                    Text("Debug builds use the Mac they were built on (\(APIClient.defaultURL)). The iPhone must be on the same Wi-Fi, and Bike Slot needs Local Network access in iOS Settings.")
                 }
                 .disabled(demoMode)
             }

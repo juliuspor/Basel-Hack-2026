@@ -30,8 +30,6 @@ struct AreaSummary: Codable, Identifiable, Hashable {
     }
 
     var availability: Availability { Availability(free: free, capacity: capacity, known: updatedAt != nil) }
-
-    var checkedDate: Date? { checkedAt.map { Date(timeIntervalSince1970: $0) } }
 }
 
 struct Slot: Codable, Identifiable, Hashable {
@@ -87,9 +85,9 @@ enum Availability {
 
     var color: Color {
         switch self {
-        case .available: .green
-        case .full: .red
-        case .unknown: .gray
+        case .available: Brand.blue
+        case .full: Brand.red
+        case .unknown: Brand.mist
         }
     }
 }

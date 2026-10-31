@@ -13,7 +13,6 @@ final class AreaStore {
 
     var totalFree: Int { areas.reduce(0) { $0 + $1.free } }
     var totalCapacity: Int { areas.reduce(0) { $0 + $1.capacity } }
-    var cameraTime: String? { areas.compactMap(\.cameraTime).max() }
 
     func pollAreas() async {
         while !Task.isCancelled {
@@ -21,7 +20,7 @@ final class AreaStore {
                 areas = try await api.areas()
                 errorMessage = nil
             } catch {
-                errorMessage = "Backend not reachable at \(APIClient.baseURL.absoluteString)"
+                errorMessage = "No backend at \(APIClient.baseURL.host() ?? "?")"
             }
             try? await Task.sleep(for: .seconds(2))
         }

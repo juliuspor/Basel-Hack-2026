@@ -8,8 +8,8 @@ final class AreaScene {
     private var bikes: [String: Entity] = [:]
     private var markers: [String: ModelEntity] = [:]
 
-    private static let freeMaterial = UnlitMaterial(color: .systemGreen)
-    private static let takenMaterial = UnlitMaterial(color: .systemRed)
+    private static let freeMaterial = UnlitMaterial(color: UIColor(Brand.blue))
+    private static let takenMaterial = UnlitMaterial(color: UIColor(Brand.red))
 
     static func load(_ area: AreaSummary) async throws -> AreaScene {
         let api = Backend.current

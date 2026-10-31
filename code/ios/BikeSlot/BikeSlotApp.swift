@@ -8,6 +8,7 @@ struct BikeSlotApp: App {
         WindowGroup {
             MapScreen()
                 .environment(store)
+                .tint(Brand.blue)
                 .task { await store.pollAreas() }
         }
     }

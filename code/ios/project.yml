@@ -19,6 +19,8 @@ targets:
         CFBundleDisplayName: Bike Slot
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # The design is light only, so the app ignores the phone's Dark Mode.
+        UIUserInterfaceStyle: Light
         CFBundleURLTypes:
           - CFBundleURLName: ch.baselhack.bikeslot
             CFBundleURLSchemes: [bikeslot]
@@ -26,7 +28,20 @@ targets:
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
         NSLocalNetworkUsageDescription: Bike Slot connects to the parking backend on your local network.
+    postBuildScripts:
+      - name: Point Debug builds at this Mac's backend
+        basedOnDependencyAnalysis: false
+        script: |
+          [ "$CONFIGURATION" = "Debug" ] || exit 0
+          for interface in en0 en1 en2; do
+            ip=$(ipconfig getifaddr "$interface") && break
+          done
+          [ -n "$ip" ] || exit 0
+          echo "http://$ip:8000" > "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/backend-url.txt"
+          echo "backend-url.txt = http://$ip:8000"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ch.baselhack.bikeslot
         TARGETED_DEVICE_FAMILY: "1"
+        # The script above writes into the built app.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO

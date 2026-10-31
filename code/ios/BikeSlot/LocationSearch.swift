@@ -104,7 +104,7 @@ struct SearchOverlay: View {
                     subtitle: "\(area.free) of \(area.capacity) spots free") { openArea(area) }
             }
             ForEach(search.completions, id: \.self) { completion in
-                row(icon: "mappin.circle.fill", tint: .blue, title: completion.title,
+                row(icon: "mappin.circle.fill", tint: Brand.blue, title: completion.title,
                     subtitle: completion.subtitle) { choose(completion) }
             }
             if matchingAreas.isEmpty && search.completions.isEmpty {
