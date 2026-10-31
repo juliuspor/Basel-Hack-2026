@@ -5257,7 +5257,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <!-- Connection paths (before components for correct z-order) -->
         <g data-graph-role="automatic-crossover" style="--step:0">
           <path data-graph-role="automatic-crossover-underlay" d="M 250 232 L 460 232" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="camera" data-edge-to="ingest" data-edge-label="blurred JPEG + person boxes" data-edge-key="0" data-edge-id="camera-to-ingest" data-composition-points="250,232;460,232" data-composition-crossover="halo" data-composition-independent="true" d="M 250 232 L 460 232" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-edge-from="camera" data-edge-to="ingest" data-edge-label="pixelated JPEG + person boxes" data-edge-key="0" data-edge-id="camera-to-ingest" data-composition-points="250,232;460,232" data-composition-crossover="halo" data-composition-independent="true" d="M 250 232 L 460 232" class="a-emphasis" data-animate="edge" style="--step:0" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:1">
           <path data-graph-role="automatic-crossover-underlay" d="M 550 264 L 550 360" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -5265,7 +5265,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </g>
         <g data-graph-role="automatic-crossover" style="--step:2">
           <path data-graph-role="automatic-crossover-underlay" d="M 640 232 L 760 232" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="ingest" data-edge-to="state" data-edge-label="changes only" data-edge-key="2" data-edge-id="ingest-to-state" data-composition-points="640,232;760,232" data-composition-crossover="halo" data-composition-independent="true" d="M 640 232 L 760 232" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-edge-from="ingest" data-edge-to="state" data-edge-label="slot states" data-edge-key="2" data-edge-id="ingest-to-state" data-composition-points="640,232;760,232" data-composition-crossover="halo" data-composition-independent="true" d="M 640 232 L 760 232" class="a-emphasis" data-animate="edge" style="--step:2" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:3">
           <path data-graph-role="automatic-crossover-underlay" d="M 930 232 L 1030 232" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -5281,8 +5281,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </g>
 
         <!-- Components -->
-        <g id="node-camera" data-node-id="camera" data-node-label="Camera" tabindex="0" role="button" aria-label="Focus Camera, YOLO11n and face blur, On the camera" aria-pressed="false" data-node-kind="security" data-node-sublabel="YOLO11n and face blur" data-node-context="On the camera">
-          <title>Camera · YOLO11n and face blur · On the camera</title>
+        <g id="node-camera" data-node-id="camera" data-node-label="Camera" tabindex="0" role="button" aria-label="Focus Camera, pixelates faces and plates, On the camera" aria-pressed="false" data-node-kind="security" data-node-sublabel="pixelates faces and plates" data-node-context="On the camera">
+          <title>Camera · pixelates faces and plates · On the camera</title>
           <rect x="40" y="200" width="210" height="64" rx="8" class="c-mask"/>
           <rect x="40" y="200" width="210" height="64" rx="8" class="c-security" data-animate="node" style="--step:0" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(46 206) scale(0.6875)">
@@ -5290,7 +5290,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <path d="m5.8 8 1.5 1.5 3-3"/>
           </g>
           <text data-node-label="" data-detail-anchor="" x="145" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Camera</text>
-        <text data-detail="context" x="145" y="246" class="t-muted" font-size="9" text-anchor="middle">YOLO11n and face blur</text>
+        <text data-detail="context" x="145" y="246" class="t-muted" font-size="9" text-anchor="middle">pixelates faces and plates</text>
         </g>
 
         <g id="node-ingest" data-node-id="ingest" data-node-label="Ingest Lambda" tabindex="0" role="button" aria-label="Focus Ingest Lambda, crops slots, AWS" aria-pressed="false" data-node-kind="backend" data-node-sublabel="crops slots" data-node-context="AWS">
@@ -5366,17 +5366,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="camera" data-edge-to="ingest" data-edge-label="blurred JPEG + person boxes" data-edge-key="0" data-edge-id="camera-to-ingest">
-          <rect x="285.2" y="212" width="139.6" height="14" rx="3" class="c-mask"/>
-          <text x="355" y="222" class="t-edge-emphasis" font-size="8" text-anchor="middle">blurred JPEG + person boxes</text>
+        <g data-detail="context" data-edge-from="camera" data-edge-to="ingest" data-edge-label="pixelated JPEG + person boxes" data-edge-key="0" data-edge-id="camera-to-ingest">
+          <rect x="280.4" y="212" width="149.2" height="14" rx="3" class="c-mask"/>
+          <text x="355" y="222" class="t-edge-emphasis" font-size="8" text-anchor="middle">pixelated JPEG + person boxes</text>
         </g>
         <g data-detail="context" data-edge-from="ingest" data-edge-to="jev" data-edge-label="slot crop, yes or no" data-edge-key="1" data-edge-id="ingest-to-jev">
           <rect x="438" y="305" width="106" height="14" rx="3" class="c-mask"/>
           <text x="491" y="315" class="t-edge-security" font-size="8" text-anchor="middle">slot crop, yes or no</text>
         </g>
-        <g data-detail="context" data-edge-from="ingest" data-edge-to="state" data-edge-label="changes only" data-edge-key="2" data-edge-id="ingest-to-state">
-          <rect x="666.2" y="212" width="67.6" height="14" rx="3" class="c-mask"/>
-          <text x="700" y="222" class="t-edge-emphasis" font-size="8" text-anchor="middle">changes only</text>
+        <g data-detail="context" data-edge-from="ingest" data-edge-to="state" data-edge-label="slot states" data-edge-key="2" data-edge-id="ingest-to-state">
+          <rect x="668.6" y="212" width="62.8" height="14" rx="3" class="c-mask"/>
+          <text x="700" y="222" class="t-edge-emphasis" font-size="8" text-anchor="middle">slot states</text>
         </g>
         <g data-detail="context" data-edge-from="state" data-edge-to="api" data-edge-label="read" data-edge-key="3" data-edge-id="state-to-api">
           <rect x="965" y="212" width="30" height="14" rx="3" class="c-mask"/>

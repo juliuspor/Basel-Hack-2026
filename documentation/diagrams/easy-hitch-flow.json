@@ -49,7 +49,7 @@
     "capture",
     "change",
     "yolo",
-    "blur",
+    "pixelate",
     "crop",
     "verdict",
     "write",
@@ -72,7 +72,7 @@
       "col": 1,
       "type": "security",
       "label": "Change check",
-      "sublabel": "vs last frame",
+      "sublabel": "vs last accepted",
       "width": 136
     },
     {
@@ -80,17 +80,17 @@
       "lane": "board",
       "col": 2,
       "type": "backend",
-      "label": "YOLO11n",
-      "sublabel": "finds people",
+      "label": "Find PII",
+      "sublabel": "YOLO11n, PP-OCRv5",
       "width": 136
     },
     {
-      "id": "blur",
+      "id": "pixelate",
       "lane": "board",
       "col": 3,
       "type": "security",
-      "label": "Face blur",
-      "sublabel": "pixelate faces",
+      "label": "Pixelate",
+      "sublabel": "faces and plates",
       "width": 136
     },
     {
@@ -116,7 +116,7 @@
       "lane": "aws",
       "col": 4,
       "type": "backend",
-      "label": "Write changes",
+      "label": "Save states",
       "sublabel": "Ingest Lambda",
       "width": 136
     },
@@ -156,7 +156,7 @@
       "id": "change-capture",
       "from": "change",
       "to": "capture",
-      "label": "no change",
+      "label": "unchanged, under 5 min",
       "variant": "dashed",
       "role": "return",
       "fromSide": "top",
@@ -164,17 +164,17 @@
       "route": "up-channel"
     },
     {
-      "id": "yolo-blur",
+      "id": "yolo-pixelate",
       "from": "yolo",
-      "to": "blur",
-      "label": "person boxes",
+      "to": "pixelate",
+      "label": "regions to hide",
       "variant": "security"
     },
     {
-      "id": "blur-crop",
-      "from": "blur",
+      "id": "pixelate-crop",
+      "from": "pixelate",
       "to": "crop",
-      "label": "blurred JPEG + boxes",
+      "label": "pixelated JPEG + boxes",
       "variant": "emphasis"
     },
     {
@@ -195,7 +195,7 @@
       "id": "write-state",
       "from": "write",
       "to": "state",
-      "label": "changes only",
+      "label": "slot states",
       "variant": "emphasis"
     },
     {

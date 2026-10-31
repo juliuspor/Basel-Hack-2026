@@ -12,7 +12,7 @@
       "id": "camera",
       "type": "security",
       "label": "Camera",
-      "sublabel": "YOLO11n and face blur",
+      "sublabel": "pixelates faces and plates",
       "pos": [
         40,
         200
@@ -130,7 +130,7 @@
       "id": "camera-to-ingest",
       "from": "camera",
       "to": "ingest",
-      "label": "blurred JPEG + person boxes",
+      "label": "pixelated JPEG + person boxes",
       "variant": "emphasis"
     },
     {
@@ -146,7 +146,7 @@
       "id": "ingest-to-state",
       "from": "ingest",
       "to": "state",
-      "label": "changes only",
+      "label": "slot states",
       "variant": "emphasis"
     },
     {
