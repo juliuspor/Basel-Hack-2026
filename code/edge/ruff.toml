@@ -1,0 +1,3 @@
+# Kept in the import root, so ruff sorts the edge modules as first-party.
+line-length = 120
+target-version = "py313"
