@@ -117,6 +117,28 @@ For each area, `code/scene-generator/build_all.sh` writes into `out/`:
 The layout itself is `code/scene-generator/layouts/<id>.json`. A new area needs
 a layout, a build, and an entry in `code/backend/data/areas.json`.
 
+## 6. From the prototype to the target architecture
+
+The prototype runs on a laptop. The target architecture
+([diagram](diagrams/easy-hitch-architecture.html), and the
+[path of one frame](diagrams/easy-hitch-flow.html)) moves each step onto the
+camera board or into AWS. Each planned piece replaces one part behind a seam
+that already exists, so the app and the API contract stay the same:
+
+| Step | Built in the prototype | Planned | Seam |
+|---|---|---|---|
+| Camera | Blender frames replayed by [`simulate.py`](../code/backend/simulate.py) | XIAO ESP32S3 Sense posting JPEGs | [`ingest`](../code/backend/app.py#L118-L153) |
+| Person privacy | Not built: the parking area itself stays visible | YOLO11n finds people on the board, faces are pixelated before upload | Before `POST /ingest` |
+| Change check | Thumbnail diff on the server ([`CHANGE_THRESHOLD`](../code/backend/app.py#L128-L138)) | On the board, against the last frame | Before `POST /ingest` |
+| Area privacy | Everything outside the parking area blacked out ([`privacy_mask`](../code/backend/providers/base.py#L36-L41)) | Ingest Lambda crops each slot | [`ingest`](../code/backend/app.py#L118-L153) |
+| Slot reading | `diff` or `claude` provider | Jev 1.14 via OpenRouter, yes or no per slot crop | [`VisionProvider`](../code/backend/providers/base.py#L30-L33) |
+| State | [`MemoryStateStore`](../code/backend/storage.py#L40-L54), lost on restart | DynamoDB, changes only | [`StateStore`](../code/backend/storage.py#L34-L37) |
+| Read API | FastAPI routes in `app.py` | Availability API on AWS | [`openapi.json`](api/openapi.json) |
+| App | iOS app | Unchanged | [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L10) |
+
+The diagrams are rendered with archify 3.2.0 from their JSON sources in
+[`diagrams/`](diagrams).
+
 ## Checks
 
 ```bash
@@ -124,4 +146,5 @@ cd code/backend && .venv/bin/pip install -r requirements-dev.txt && .venv/bin/py
 ```
 
 The tests fail when the exported spec or the app's demo data no longer match
-the code, or when a provider misreads the simulated frames.
+the code, when a provider misreads the simulated frames, or when a document
+links to code that has moved (`tests/test_docs.py`).
