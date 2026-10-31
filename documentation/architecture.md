@@ -1,152 +1,101 @@
-# Architecture: who owns what, and where the seams are
+# Architecture: parts and seams
 
-The prototype is split so the app, the backend, the vision models and the 3D
-scenes can be worked on in parallel. Each part talks to the next through one
-small, written-down interface.
+Easy+Hitch is split into parts that are built and changed independently: the
+camera pipeline, the backend, the iOS app and the 3D scenes. Each part talks
+to the next through one small, written-down interface. The
+[architecture diagram](diagrams/easy-hitch-architecture.html) and
+[frame flow](diagrams/easy-hitch-flow.html) draw it.
 
-```
- Camera (ESP32-CAM, or simulate.py)
-   │  POST /ingest/{area}  JPEG
-   ▼
- Backend (code/backend, FastAPI)
-   ingest ─▶ change check ─▶ privacy mask ─▶ VisionProvider ─▶ StateStore
-   read API (/areas, /areas/{id}) ◀── StateStore, AssetStore
-   │
-   │  API contract: documentation/api/openapi.json (from schemas.py)
-   ▼
- iOS app (code/ios), or its built-in demo data
-```
+One frame takes this path:
+
+1. A camera captures a frame and compares it with the last frame the backend
+   accepted. Nothing happens until the view changes, or five minutes pass.
+2. The camera finds people, pixelates their faces, and uploads the JPEG with
+   the person boxes to `POST /v1/frames`.
+3. The Ingest function fingerprints every slot and asks Jev 1.14 about the
+   slots that changed, one yes or no question per slot crop.
+4. The state rule turns the readings into slot states, which DynamoDB keeps.
+   The frame is discarded.
+5. The Availability function serves the states at `/v1/stations` and, for AI
+   agents, through the MCP server at `/mcp`.
 
 | Part | Folder | Interface it owns |
 |---|---|---|
-| App UI | `code/ios` | Uses the API contract; ships demo data |
-| Backend API | `code/backend/app.py`, `schemas.py`, `storage.py` | The API contract; `StateStore`, `AssetStore` |
-| Vision models | `code/backend/providers/` | `VisionProvider` |
-| 3D scenes and simulated cameras | `code/scene-generator` | The per-area asset bundle |
+| Camera pipeline | `code/edge` | The Ingest API request: JPEG, token, person boxes |
+| Backend | `code/backend` | Both API contracts, `OccupancyClassifier`, `OccupancyRepository`, `FingerprintStore` |
+| iOS app | `code/ios` | `AreaService`, with a backend client and built-in sample data |
+| 3D scenes | `code/scene-generator` | Shelter models with one node per slot |
 
-## 1. App ↔ backend: the API contract
+## Camera and backend: the Ingest API
 
-- `code/backend/schemas.py` defines every response the app reads. FastAPI turns
-  it into an OpenAPI spec, exported to [`api/openapi.json`](api/openapi.json).
-  A running backend also serves it at `/openapi.json` and as browsable docs at
-  `/docs`.
-- Fields are snake_case in JSON; the app converts them to camelCase.
-- `model_url` is either a path on the backend (`/models/<id>.usdz`) or an
-  absolute URL, so models can later come from S3 or a CDN.
+The camera pipeline sends a frame only when it changed, or every five minutes
+as a heartbeat ([`EdgePipeline`](../code/edge/pipeline.py#L26-L53)). It
+first pixelates the faces it finds, and in recorded frames also the plates
+their sidecars list ([`pixelate`](../code/edge/pixelate.py#L12-L22)). It
+sends the person boxes along, so the backend skips the slots behind people. The contract is
+[`ingest.openapi.json`](api/ingest.openapi.json). The camera's bearer token
+names the camera, and the camera's calibration names its station.
 
-Changing the contract (renaming, removing or retyping a field, or a new
-endpoint the app needs) goes in one pull request that also:
+The same interfaces serve a live camera and recorded frames:
 
-1. regenerates the spec: `cd code/backend && .venv/bin/python export_openapi.py`
-2. refreshes the app's demo data: `code/ios/refresh-demo.sh` (needs a running
-   backend)
-3. updates `code/ios/BikeSlot/Models.swift` if the app should use the change
-
-Adding an optional field is safe: the app ignores fields it does not know.
-
-## 2. App without a backend: demo mode
-
-The app ships sample spots (`code/ios/BikeSlot/Demo/demo-areas.json`, in the
-API's format). In demo mode a random slot changes every four
-seconds, so the UI has live updates to show. Turn it on with
-**Settings → Demo data**, or launch with `-demoMode YES` (in Xcode: Scheme →
-Run → Arguments). UI work then needs only Xcode.
-
-In code, both the live backend and the demo implement `AreaService`
-(`APIClient.swift`); `Backend.current` picks one.
-
-## 3. Backend ↔ vision models: `VisionProvider`
-
-A provider is a class with a `name` and
-`analyze(image, camera) -> Result` (`providers/base.py`):
-
-- `image` is already masked to the parking area. The backend applies the
-  privacy mask before any provider is called, so a new provider cannot skip it.
-- `camera` is the area's calibration: slot ids with their numbered tag position
-  and pixel region, the parking area's region and a reference frame of the
-  empty area.
-- `Result` holds the occupied slot ids, whether a person is in view, and free-form
-  `detail` (scores, token usage).
-
-Available providers, picked with `VISION_PROVIDER`:
-
-| Name | What it does | Needs |
+| Interface | With a camera | With recorded frames |
 |---|---|---|
-| `diff` | Compares each slot with the empty reference frame | Nothing |
-| `claude` | Asks a Claude vision model (`VISION_MODEL`, default `claude-haiku-5-5`) | `ANTHROPIC_API_KEY` |
-| `auto` (default) | `claude` if a key is set, else `diff` | |
+| [`FrameSource`](../code/edge/sources.py#L14-L15) | `WebcamFrameSource` | [`FolderFrameSource`](../code/edge/sources.py#L18-L45) |
+| [`PIIDetector`](../code/edge/pii.py#L27-L28) | [`YoloPIIDetector`](../code/edge/pii.py#L57-L69) | [`SidecarPIIDetector`](../code/edge/pii.py#L36-L54) |
+| [`FrameUploader`](../code/edge/upload.py#L17-L19) | [`IngestClient`](../code/edge/upload.py#L22-L58) | [`DryRunUploader`](../code/edge/upload.py#L61-L67) |
 
-To add one (OpenAI, a model on AWS Bedrock, …):
+## Backend and classifiers: `OccupancyClassifier`
 
-1. Create `providers/<name>.py` with the class. Reuse `tagged_jpeg`, `prompt`,
-   `result_schema` and `from_answer` from `base.py`, so every model gets the same
-   image and question and they can be compared fairly.
-2. Register it in `PROVIDERS` in `providers/__init__.py`. Import the SDK inside
-   the class, so others do not need it installed.
-3. Add the SDK to `requirements.txt`, and the name to the parametrized test in
-   `tests/test_contract.py` to check it against the simulated frames.
+A classifier gets the whole frame and the slots to read, and returns a reading
+per slot number ([`OccupancyClassifier`](../code/backend/classification/classifier.py#L27-L28)).
+How it looks at the frame is its own strategy:
 
-The simulated frames carry the true state of every slot, so `simulate.py` (and
-the test) measure each provider's accuracy.
+- [`JevCropClassifier`](../code/backend/classification/jev.py#L34-L64) crops
+  every slot and asks Jev 1.14, through OpenRouter's Decisions API, one yes or
+  no question per crop, all in one request.
+- [`StaticClassifier`](../code/backend/classification/static.py#L25-L57)
+  answers from `data/static-readings.json` and needs no network access.
 
-## 4. Where state and assets live: `StateStore` and `AssetStore`
+A new classifier is a class with `classify(frame, slots)`, picked in
+[`classifier`](../code/backend/composition.py#L84-L98).
 
-`storage.py` defines both interfaces and the local versions that run on a
-laptop:
+## State: `OccupancyRepository` and `FingerprintStore`
 
-- `StateStore` keeps an `AreaState` per area: slot states, timestamps, frame
-  counters. No images and nothing about people. `MemoryStateStore` loses it on
-  restart; a cloud version (e.g. DynamoDB) is a new class with `get` and `put`.
-- `AssetStore` reads the site list (`data/areas.json`), each area's layout,
-  camera calibration and 3D model. `LocalAssetStore` reads the repo and
-  `code/scene-generator/out`; a cloud version (e.g. S3) is a new class, and its
-  `model_url` can return an absolute URL.
+- [`OccupancyRepository`](../code/backend/occupancy/repository.py#L15-L21)
+  keeps one `StationOccupancy` per station: each slot's state, confidence and
+  report times. It holds no images and nothing about people. A save names the
+  version it read, so two writers cannot overwrite each other.
+- [`FingerprintStore`](../code/backend/ingest/fingerprints.py#L11-L14) keeps
+  each camera's slot fingerprints, so unchanged slots skip the classifier.
 
-`STATE_STORE` and `ASSET_STORE` pick the implementation in `make_stores()`
-(only `local` exists so far). Only `storage.py` should import cloud SDKs.
+Both have an in-memory version for a laptop and a DynamoDB version for AWS.
+Only [`composition.py`](../code/backend/composition.py) picks implementations.
 
-## 5. Scene generator ↔ backend: the area bundle
+## Backend and clients: the Availability API and MCP
 
-For each area, `code/scene-generator/build_all.sh` writes into `out/`:
+[`AvailabilityService`](../code/backend/availability/service.py#L33-L70)
+answers both the HTTP API ([`availability.openapi.json`](api/availability.openapi.json))
+and the MCP server's tools
+([`build_server`](../code/backend/availability/mcp_server.py#L31-L58)), with
+the same response shapes ([`views.py`](../code/backend/availability/views.py)).
+Fields are snake_case in JSON, and station responses carry an `ETag` for
+cheap polling.
 
-- `<id>.usdz`: the 3D model of the area, served at `/models/<id>.usdz` (the
-  app draws its own spot view in three.js from the area's `kind` and slots)
-- `cameras/<id>/camera.json` plus `empty.jpg`: calibration and reference frame
-- `cameras/<id>/frame_*.jpg`: simulated camera frames with the true state
+## iOS app
 
-The layout itself is `code/scene-generator/layouts/<id>.json`. A new area needs
-a layout, a build, and an entry in `code/backend/data/areas.json`. A spot that
-is mapped but has no camera yet needs only the entry, with its `kind`, `size`
-and number of `slots`; the backend then lists it with unknown slots.
+The app shows the site map with a pin per station, a card with the counts and
+cycling directions, and a 3D view with a bike on every taken slot. It ships
+sample shelters in `code/ios/BikeSlot/Demo/` (JSON plus USDZ models), and in
+demo mode a random slot changes every four seconds, so the interface can be
+shown and developed without a backend. Turn it on with the **Demo data**
+switch in the app's settings, or launch with `-demoMode YES` (in Xcode, as an
+argument of the scheme's Run action). The backend client and the demo both implement
+[`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L10), and
+`Backend.current` picks one.
 
-## 6. From the prototype to the target architecture
+## 3D scenes and station models
 
-The prototype runs on a laptop. The target architecture
-([diagram](diagrams/easy-hitch-architecture.html), and the
-[path of one frame](diagrams/easy-hitch-flow.html)) moves each step onto the
-camera board or into AWS. Each planned piece replaces one part behind a seam
-that already exists, so the app and the API contract stay the same:
-
-| Step | Built in the prototype | Planned | Seam |
-|---|---|---|---|
-| Camera | Blender frames replayed by [`simulate.py`](../code/backend/simulate.py) | XIAO ESP32S3 Sense posting JPEGs | [`ingest`](../code/backend/app.py#L125-L162) |
-| Person privacy | Not built: the parking area itself stays visible | YOLO11n finds people on the board, faces are pixelated before upload | Before `POST /ingest` |
-| Change check | Thumbnail diff on the server ([`CHANGE_THRESHOLD`](../code/backend/app.py#L137-L147)) | On the board, against the last frame | Before `POST /ingest` |
-| Area privacy | Everything outside the parking area blacked out ([`privacy_mask`](../code/backend/providers/base.py#L36-L41)) | Ingest Lambda crops each slot | [`ingest`](../code/backend/app.py#L125-L162) |
-| Slot reading | `diff` or `claude` provider | Jev 1.14 via OpenRouter, yes or no per slot crop | [`VisionProvider`](../code/backend/providers/base.py#L30-L33) |
-| State | [`MemoryStateStore`](../code/backend/storage.py#L40-L54), lost on restart | DynamoDB, changes only | [`StateStore`](../code/backend/storage.py#L34-L37) |
-| Read API | FastAPI routes in `app.py` | Availability API on AWS | [`openapi.json`](api/openapi.json) |
-| App | iOS app | Unchanged | [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) |
-
-The diagrams are rendered with archify 3.2.0 from their JSON sources in
-[`diagrams/`](diagrams).
-
-## Checks
-
-```bash
-cd code/backend && .venv/bin/pip install -r requirements-dev.txt && .venv/bin/python -m pytest
-```
-
-The tests fail when the exported spec or the app's demo data no longer match
-the code, when a provider misreads the simulated frames, or when a document
-links to code that has moved (`tests/test_docs.py`).
+The Availability API serves `data/models/<station_id>.usdz`. A station model
+has one node per slot, named `slot_<number>`, so the app can place a bike on
+every taken slot and match it with the slot states. The scene generator in
+`code/scene-generator` builds shelter models from layout files in Blender.
