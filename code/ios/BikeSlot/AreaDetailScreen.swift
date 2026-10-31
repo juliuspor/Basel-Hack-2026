@@ -98,20 +98,6 @@ private struct StatusCard: View {
             }
             .animation(.snappy, value: summary.free)
 
-            if let slots = detail?.slots {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 7), spacing: 6) {
-                    ForEach(slots) { slot in
-                        Text("\(slot.label)")
-                            .font(.caption.weight(.bold).monospacedDigit())
-                            .frame(maxWidth: .infinity, minHeight: 28)
-                            .foregroundStyle(.white)
-                            .background(slot.occupied ? Brand.red : Brand.blue,
-                                        in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-                    }
-                }
-                .animation(.snappy, value: slots)
-            }
-
             if detail?.personPresent == true {
                 Label("Someone is in view, showing the last known state", systemImage: "figure.walk")
                     .font(.footnote)

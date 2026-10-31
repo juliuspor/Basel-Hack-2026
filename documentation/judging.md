@@ -37,13 +37,13 @@ code.
 
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`Slot`](../code/backend/schemas.py#L31-L34),
-[`AreaDetail`](../code/backend/schemas.py#L37-L42)). The app shows the slots as
-numbered tiles ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L83-L124))
-and in 3D: a diorama of the real corner, with the buildings and streets from
-OpenStreetMap and every shelter at its measured position under a live
-"A · 9 free" sign ([`SiteScene`](../code/ios/BikeSlot/SiteScene.swift#L5-L281)),
-each shelter with a bike on every taken slot
-([`AreaScene`](../code/ios/BikeSlot/AreaScene.swift#L4-L78)).
+[`AreaDetail`](../code/backend/schemas.py#L37-L42)). The app shows them in 3D:
+a diorama of the real corner, with the buildings and streets from OpenStreetMap
+and every shelter at its measured position under a live "A · 9 free" sign
+([`SiteScene`](../code/ios/BikeSlot/SiteScene.swift#L5-L281)), each slot with a
+numbered blue/red marker and a bike when taken
+([`AreaScene`](../code/ios/BikeSlot/AreaScene.swift#L4-L78)). The card below
+keeps only the free count ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L83-L110)).
 
 **No training data.** The backend draws a numbered tag in front of every slot
 ([`draw_labels`](../code/backend/providers/base.py#L44-L55)) and asks a vision
@@ -122,7 +122,7 @@ maps each one.
 - A person walking through hides slots, so the backend keeps the last slot
   states while someone is in view
   ([`person_present`](../code/backend/app.py#L147-L150)), and the app says so
-  ([`personPresent`](../code/ios/BikeSlot/AreaDetailScreen.swift#L115-L119)).
+  ([`personPresent`](../code/ios/BikeSlot/AreaDetailScreen.swift#L101-L105)).
 - Model answers must match a JSON schema whose only allowed values are the tag
   numbers ([`result_schema`](../code/backend/providers/base.py#L80-L90)), and
   an answer that was cut off raises an error instead of being misread
