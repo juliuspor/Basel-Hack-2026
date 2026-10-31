@@ -40,12 +40,12 @@ a count ([`Slot`](../code/backend/schemas.py#L31-L34),
 [`AreaDetail`](../code/backend/schemas.py#L37-L42)). Tapping a spot flies,
 like Google Earth, from above a three.js model of the Endress+Hauser block
 (its buildings, streets and trees from OpenStreetMap) down to where you would
-stand in front of the rack ([`show`](../code/ios/BikeSlot/Spot/spot.js#L179-L230)).
+stand in front of the rack ([`show`](../code/ios/BikeSlot/Spot/spot.js#L178-L225)).
 The rack is built for the spot's kind
-([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L375-L404) and three
+([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L424-L453) and three
 more), with a glowing blue pad on every free slot and a bike on every taken one
-([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L243-L260)), shown in the app by
-[`SpotView`](../code/ios/BikeSlot/SpotView.swift#L7-L73). The card below keeps
+([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L238-L255)), shown in the app by
+[`SpotView`](../code/ios/BikeSlot/SpotView.swift#L9-L74). The card below keeps
 only the free count ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L53-L86)).
 
 **No training data.** The backend draws a numbered tag in front of every slot

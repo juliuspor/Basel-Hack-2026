@@ -3,8 +3,9 @@ import WebKit
 
 /// The 3D view of one bike spot: Spot/spot.html (three.js) flies down into a model of the
 /// Endress+Hauser block and lands in front of the rack, with a blue pad on every free slot and
-/// a bike on every taken one. Once landed, a sideways drag slides along the rack; the page
-/// handles it, so the web view must not scroll or zoom.
+/// a bike on every taken one. Once landed you look around it like in Google Maps 3D (drag,
+/// pinch, twist); the page handles those gestures, so the web view must not scroll or zoom,
+/// and a sideways drag must not pop the screen.
 struct SpotView: UIViewRepresentable {
     let area: AreaSummary
     let slots: [Slot]
@@ -14,7 +15,7 @@ struct SpotView: UIViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeUIView(context: Context) -> WKWebView {
-        let web = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+        let web = GestureWebView(frame: .zero, configuration: WKWebViewConfiguration())
         web.isOpaque = false
         web.backgroundColor = .clear
         web.scrollView.isScrollEnabled = false
@@ -68,6 +69,32 @@ struct SpotView: UIViewRepresentable {
         /// JSON text of a value, safe to paste into a script.
         private static func json(_ value: some Encodable) -> String {
             (try? JSONEncoder().encode(value)).flatMap { String(data: $0, encoding: .utf8) } ?? "null"
+        }
+    }
+}
+
+/// A web view that keeps the navigation stack's swipe-back gestures off while it is on screen,
+/// so dragging the 3D view sideways turns it instead of closing the screen. The back button
+/// still works.
+final class GestureWebView: WKWebView {
+    private weak var navigation: UINavigationController?
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil {
+            navigation = sequence(first: self as UIResponder, next: \.next)
+                .compactMap { ($0 as? UIViewController)?.navigationController }.first
+            setSwipeBack(enabled: false)
+        } else {
+            setSwipeBack(enabled: true)
+        }
+    }
+
+    private func setSwipeBack(enabled: Bool) {
+        navigation?.interactivePopGestureRecognizer?.isEnabled = enabled
+        if #available(iOS 26.0, *) {
+            // iOS 26 also pops when swiping anywhere in the content, not only from the edge.
+            navigation?.interactiveContentPopGestureRecognizer?.isEnabled = enabled
         }
     }
 }

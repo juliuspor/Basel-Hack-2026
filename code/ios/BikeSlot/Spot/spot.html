@@ -12,10 +12,10 @@
   }
   canvas { position: fixed; inset: 0; display: block; touch-action: none; }
   body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: none; }
-  /* Shown for a few seconds after landing: you can slide along the rack. */
+  /* Shown for a few seconds after landing: how to look around. */
   #hint {
     position: fixed; left: 50%; top: 16%; transform: translateX(-50%);
-    padding: 7px 14px; border-radius: 999px; background: rgba(54, 68, 76, 0.72); color: #fff;
+    padding: 7px 14px; border-radius: 999px; white-space: nowrap; background: rgba(54, 68, 76, 0.72); color: #fff;
     font: 600 14px -apple-system, system-ui, sans-serif; letter-spacing: 0.01em;
     opacity: 0; transition: opacity 0.5s ease; pointer-events: none; z-index: 2;
   }
@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-<div id="hint">← Drag to look along the rack →</div>
+<div id="hint">Drag to look around · Pinch to zoom</div>
 <script src="three.min.js"></script>
 <script src="site.js"></script>
 <script src="spot.js"></script>

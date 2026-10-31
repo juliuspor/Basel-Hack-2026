@@ -1,7 +1,8 @@
 // One bike spot in a 3D model of the Endress+Hauser block. The view starts high above the
 // block and flies down, like Google Earth, until you stand right in front of the rack: a
-// blue glowing pad on every free slot and a parked bike on every taken one. Once landed, a
-// sideways drag slides you along the rack, to look for landmarks; you cannot walk away.
+// blue glowing pad on every free slot and a parked bike on every taken one. Once landed you
+// can look around the rack like in Google Maps 3D: drag to orbit and tilt, pinch to zoom,
+// twist to rotate, double-tap to return to the front view. The rack stays the focus.
 //
 // The world comes from site.js (OpenStreetMap buildings, streets, car parks and trees,
 // written by code/scene-generator/site_world.py). The app calls
@@ -40,9 +41,16 @@
     bike_garage: { pitch: 0.55, build: bikeGarage },
   };
 
-  let renderer, scene, camera, sun, clouds = [];
-  let flight = null; // {start, eye: [P0..P3], target: [from, to], right, limit, perPixel}
-  const pan = { offset: 0, goal: 0, speed: 0, lastX: null, lastTime: 0 }; // metres along the rack
+  let renderer, scene, camera, sun;
+  let flight = null; // {start, eye: [P0..P3], target: [from, to]}
+  // After landing the camera orbits the rack: `goal` follows the fingers, `now` eases after
+  // it, `spin` keeps a flick turning for a moment. Angles as in THREE.Spherical.
+  const orbit = { active: false, focus: null, home: null, now: null, goal: null, lift: 0,
+    spin: { theta: 0, phi: 0 }, pointers: new Map(), lastTap: 0, lastMove: 0 };
+  // Turning stays within 100° of the front (behind the rack is the building), and the further
+  // out you zoom the more you look down, so the buildings never hide the rack.
+  const LIMITS = { minRadius: 4, maxRadius: 70, minPhi: 0.12, maxPhi: 1.5, farPhi: 1.0, turn: 1.75,
+    minHeight: 1.2 };
   let slots = []; // {pad, beam, bike, occupied, shown}
   let known = true;
   const FOV = 72; // vertical, close to a phone camera held upright
@@ -163,15 +171,6 @@
     trunks.castShadow = crowns.castShadow = true;
     scene.add(trunks, crowns);
 
-    const puff = cloudTexture();
-    for (let i = 0; i < 9; i++) {
-      const cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: puff, transparent: true, opacity: 0.85,
-        depthWrite: false, fog: false }));
-      cloud.scale.set(120 + (i % 3) * 40, 50 + (i % 2) * 20, 1);
-      cloud.position.set(-400 + i * 100, 170 + (i % 4) * 22, -350 + ((i * 173) % 700));
-      scene.add(cloud);
-      clouds.push(cloud);
-    }
   }
 
   // ---- The spot ------------------------------------------------------------------------
@@ -222,10 +221,6 @@
       eye: [start, holder.position.clone().addScaledVector(front, 110).setY(170),
         holder.position.clone().addScaledVector(front, distance + 22).setY(16), eye],
       target: [new THREE.Vector3(0, 0, 0), target],
-      // Sliding runs along the rack, at most to its ends (or 3 m for short ones).
-      right: holder.localToWorld(new THREE.Vector3(1, 0, 0)).sub(holder.position).normalize(),
-      limit: Math.max(built.width / 2, 3),
-      perPixel: (2 * distance * Math.tan(across / 2)) / window.innerWidth,
     };
   }
 
@@ -266,33 +261,15 @@
     let arrived = 0;
     if (flight) {
       const k = Math.min((t - flight.start) / FLIGHT_SECONDS, 1);
-      const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // ease in and out
-      camera.position.copy(bezier(flight.eye, e));
-      const look = flight.target[0].clone().lerp(flight.target[1], Math.min(1, e * 1.25));
-      if (k === 1) {
-        // Landed: follow the finger along the rack, coasting a little after release.
-        if (pan.lastX === null && pan.speed) {
-          pan.goal += pan.speed * dt;
-          pan.speed *= Math.pow(0.04, dt);
-          if (Math.abs(pan.speed) < 0.05) pan.speed = 0;
-        }
-        pan.goal = THREE.MathUtils.clamp(pan.goal, -flight.limit, flight.limit);
-        pan.offset += (pan.goal - pan.offset) * Math.min(dt * 12, 1);
-        camera.position.addScaledVector(flight.right, pan.offset);
-        look.addScaledVector(flight.right, pan.offset);
-        camera.position.y += Math.sin(t * 0.8) * 0.015; // breathe, as if standing there
-        if (!landed) {
-          landed = true;
-          document.body.classList.add("landed");
-        }
+      if (orbit.active) {
+        stepOrbit(dt);
+      } else {
+        const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // ease in and out
+        camera.position.copy(bezier(flight.eye, e));
+        camera.lookAt(flight.target[0].clone().lerp(flight.target[1], Math.min(1, e * 1.25)));
+        if (k === 1) startOrbit(flight.eye[3], flight.target[1]);
       }
-      camera.lookAt(look);
       arrived = THREE.MathUtils.clamp((k - 0.75) / 0.25, 0, 1);
-    }
-
-    for (const cloud of clouds) {
-      cloud.position.x += dt * 2.2;
-      if (cloud.position.x > 520) cloud.position.x = -520;
     }
 
     for (const s of slots) {
@@ -312,25 +289,97 @@
     renderer.render(scene, camera);
   }
 
-  // A horizontal drag moves the world with the finger, so you step the other way.
-  let landed = false;
+  // ---- Looking around after landing, like Google Maps in 3D -----------------------------
+
+  function startOrbit(eye, focus) {
+    const s = new THREE.Spherical().setFromVector3(eye.clone().sub(focus));
+    orbit.focus = focus.clone();
+    orbit.home = { radius: s.radius, phi: s.phi, theta: s.theta };
+    orbit.now = { ...orbit.home };
+    orbit.goal = { ...orbit.home };
+    orbit.active = true;
+    document.body.classList.add("landed");
+  }
+
+  function stepOrbit(dt) {
+    const { now, goal, spin } = orbit;
+    if (!orbit.pointers.size && (spin.theta || spin.phi)) { // a flick keeps turning, then stops
+      goal.theta += spin.theta * dt;
+      goal.phi += spin.phi * dt;
+      const decay = Math.pow(0.03, dt);
+      spin.theta *= decay;
+      spin.phi *= decay;
+      if (Math.abs(spin.theta) + Math.abs(spin.phi) < 0.02) spin.theta = spin.phi = 0;
+    }
+    goal.radius = THREE.MathUtils.clamp(goal.radius, LIMITS.minRadius, LIMITS.maxRadius);
+    const far = THREE.MathUtils.smoothstep(goal.radius, 15, 60);
+    goal.phi = THREE.MathUtils.clamp(goal.phi, LIMITS.minPhi, THREE.MathUtils.lerp(LIMITS.maxPhi, LIMITS.farPhi, far));
+    const turned = goal.theta - orbit.home.theta;
+    if (Math.abs(turned) > LIMITS.turn) {
+      goal.theta = orbit.home.theta + Math.sign(turned) * LIMITS.turn;
+      spin.theta = 0;
+    }
+    const ease = Math.min(dt * 10, 1);
+    for (const key of ["radius", "phi", "theta"]) now[key] += (goal[key] - now[key]) * ease;
+
+    const position = new THREE.Vector3()
+      .setFromSpherical(new THREE.Spherical(now.radius, now.phi, now.theta)).add(orbit.focus);
+    // Behind the rack is the building: rise over its roof instead of ending up inside it.
+    let roof = LIMITS.minHeight;
+    for (const b of window.SITE.buildings) {
+      if (inside([position.x, -position.z], b.outline)) roof = Math.max(roof, b.height + 2);
+    }
+    orbit.lift += (roof - orbit.lift) * ease;
+    position.y = Math.max(position.y, orbit.lift);
+    camera.position.copy(position);
+    camera.lookAt(orbit.focus);
+  }
+
   window.addEventListener("pointerdown", (e) => {
-    if (!landed) return;
-    pan.lastX = e.clientX;
-    pan.lastTime = performance.now();
-    pan.speed = 0;
+    if (!orbit.active) return;
+    orbit.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    orbit.spin.theta = orbit.spin.phi = 0;
+    const now = performance.now();
+    if (orbit.pointers.size === 1 && now - orbit.lastTap < 300) Object.assign(orbit.goal, orbit.home); // double tap: front view
+    orbit.lastTap = orbit.lastMove = now;
   });
+
   window.addEventListener("pointermove", (e) => {
-    if (pan.lastX === null) return;
-    const now = performance.now(), step = -(e.clientX - pan.lastX) * flight.perPixel;
-    pan.goal += step;
-    pan.speed = step / Math.max((now - pan.lastTime) / 1000, 0.008);
-    pan.lastX = e.clientX;
-    pan.lastTime = now;
+    const p = orbit.pointers.get(e.pointerId);
+    if (!p) return;
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    const now = performance.now(), seconds = Math.max((now - orbit.lastMove) / 1000, 0.008);
+    if (orbit.pointers.size === 1) {
+      // One finger: the world follows it, turning around the rack and tilting.
+      const turn = -dx * 0.006, tilt = -dy * 0.005;
+      orbit.goal.theta += turn;
+      orbit.goal.phi += tilt;
+      orbit.spin = { theta: turn / seconds, phi: tilt / seconds };
+    } else {
+      // Two fingers: pinch to zoom, twist to rotate, slide up or down together to tilt.
+      const other = [...orbit.pointers.entries()].find(([id]) => id !== e.pointerId)[1];
+      const before = [p.x - other.x, p.y - other.y], after = [e.clientX - other.x, e.clientY - other.y];
+      orbit.goal.radius *= Math.hypot(...before) / Math.max(Math.hypot(...after), 1);
+      orbit.goal.theta += Math.atan2(after[1], after[0]) - Math.atan2(before[1], before[0]);
+      orbit.goal.phi -= dy * 0.0025;
+    }
+    p.x = e.clientX;
+    p.y = e.clientY;
+    orbit.lastMove = now;
   });
-  const release = () => { pan.lastX = null; };
+
+  const release = (e) => {
+    orbit.pointers.delete(e.pointerId);
+    if (performance.now() - orbit.lastMove > 80) orbit.spin.theta = orbit.spin.phi = 0; // held still: no flick
+  };
   window.addEventListener("pointerup", release);
   window.addEventListener("pointercancel", release);
+  window.addEventListener("wheel", (e) => {
+    if (!orbit.active) return;
+    orbit.goal.radius *= Math.exp(e.deltaY * 0.0015);
+    e.preventDefault();
+  }, { passive: false });
+
 
   function inside([x, y], ring) {
     let hit = false;
@@ -690,16 +739,6 @@
         g.beginPath(); g.moveTo(0, i); g.lineTo(s, i); g.stroke();
       }
     }, [3, 3]);
-  }
-
-  function cloudTexture() {
-    return canvasTexture(128, (g, s) => {
-      for (const [x, y, r] of [[0.35, 0.55, 0.3], [0.55, 0.45, 0.32], [0.7, 0.58, 0.25], [0.45, 0.62, 0.28]]) {
-        const puff = g.createRadialGradient(x * s, y * s, 0, x * s, y * s, r * s);
-        puff.addColorStop(0, "rgba(255,255,255,0.9)"); puff.addColorStop(1, "rgba(255,255,255,0)");
-        g.fillStyle = puff; g.fillRect(0, 0, s, s);
-      }
-    });
   }
 
   setup();
