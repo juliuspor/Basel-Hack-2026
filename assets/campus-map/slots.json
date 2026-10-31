@@ -1,0 +1,590 @@
+{
+ "source": "Slot positions measured from OSM way 1463536691, satellite imagery, and the 29 Oct 2026 site photos; occupancy is illustrative",
+ "slots": [
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 1,
+   "status": "taken",
+   "x": 144.82,
+   "y": 0.24,
+   "lon": 7.6001752,
+   "lat": 47.4878522
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 2,
+   "status": "free",
+   "x": 144.82,
+   "y": 1.24,
+   "lon": 7.6001751,
+   "lat": 47.4878612
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 3,
+   "status": "free",
+   "x": 144.81,
+   "y": 2.24,
+   "lon": 7.600175,
+   "lat": 47.4878702
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 4,
+   "status": "taken",
+   "x": 144.8,
+   "y": 3.24,
+   "lon": 7.6001749,
+   "lat": 47.4878792
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 5,
+   "status": "taken",
+   "x": 144.79,
+   "y": 4.24,
+   "lon": 7.6001748,
+   "lat": 47.4878882
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 6,
+   "status": "free",
+   "x": 144.77,
+   "y": 6.14,
+   "lon": 7.6001746,
+   "lat": 47.4879053
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 7,
+   "status": "taken",
+   "x": 144.76,
+   "y": 7.14,
+   "lon": 7.6001744,
+   "lat": 47.4879143
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 8,
+   "status": "taken",
+   "x": 144.76,
+   "y": 8.14,
+   "lon": 7.6001743,
+   "lat": 47.4879233
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 9,
+   "status": "free",
+   "x": 144.75,
+   "y": 9.14,
+   "lon": 7.6001742,
+   "lat": 47.4879323
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 10,
+   "status": "free",
+   "x": 144.74,
+   "y": 10.14,
+   "lon": 7.6001741,
+   "lat": 47.4879413
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 11,
+   "status": "taken",
+   "x": 144.72,
+   "y": 12.04,
+   "lon": 7.6001739,
+   "lat": 47.4879583
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 12,
+   "status": "taken",
+   "x": 144.71,
+   "y": 13.04,
+   "lon": 7.6001738,
+   "lat": 47.4879673
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 13,
+   "status": "taken",
+   "x": 144.7,
+   "y": 14.04,
+   "lon": 7.6001736,
+   "lat": 47.4879763
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 14,
+   "status": "free",
+   "x": 144.7,
+   "y": 15.04,
+   "lon": 7.6001735,
+   "lat": 47.4879853
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 15,
+   "status": "free",
+   "x": 144.69,
+   "y": 16.04,
+   "lon": 7.6001734,
+   "lat": 47.4879943
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 16,
+   "status": "taken",
+   "x": 144.67,
+   "y": 17.94,
+   "lon": 7.6001732,
+   "lat": 47.4880114
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 17,
+   "status": "free",
+   "x": 144.66,
+   "y": 18.94,
+   "lon": 7.6001731,
+   "lat": 47.4880204
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 18,
+   "status": "free",
+   "x": 144.65,
+   "y": 19.94,
+   "lon": 7.600173,
+   "lat": 47.4880294
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 19,
+   "status": "free",
+   "x": 144.64,
+   "y": 20.94,
+   "lon": 7.6001728,
+   "lat": 47.4880384
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 20,
+   "status": "free",
+   "x": 144.64,
+   "y": 21.94,
+   "lon": 7.6001727,
+   "lat": 47.4880474
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 21,
+   "status": "taken",
+   "x": 144.62,
+   "y": 23.84,
+   "lon": 7.6001725,
+   "lat": 47.4880645
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 22,
+   "status": "taken",
+   "x": 144.61,
+   "y": 24.84,
+   "lon": 7.6001724,
+   "lat": 47.4880735
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 23,
+   "status": "taken",
+   "x": 144.6,
+   "y": 25.84,
+   "lon": 7.6001723,
+   "lat": 47.4880825
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 24,
+   "status": "taken",
+   "x": 144.59,
+   "y": 26.84,
+   "lon": 7.6001722,
+   "lat": 47.4880915
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 25,
+   "status": "taken",
+   "x": 144.58,
+   "y": 27.84,
+   "lon": 7.600172,
+   "lat": 47.4881005
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 26,
+   "status": "taken",
+   "x": 144.57,
+   "y": 29.73,
+   "lon": 7.6001718,
+   "lat": 47.4881176
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 27,
+   "status": "taken",
+   "x": 144.56,
+   "y": 30.73,
+   "lon": 7.6001717,
+   "lat": 47.4881266
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 28,
+   "status": "taken",
+   "x": 144.55,
+   "y": 31.73,
+   "lon": 7.6001716,
+   "lat": 47.4881356
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 29,
+   "status": "taken",
+   "x": 144.54,
+   "y": 32.73,
+   "lon": 7.6001715,
+   "lat": 47.4881446
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 30,
+   "status": "free",
+   "x": 144.53,
+   "y": 33.73,
+   "lon": 7.6001714,
+   "lat": 47.4881536
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 31,
+   "status": "taken",
+   "x": 144.52,
+   "y": 35.63,
+   "lon": 7.6001711,
+   "lat": 47.4881706
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 32,
+   "status": "free",
+   "x": 144.51,
+   "y": 36.63,
+   "lon": 7.600171,
+   "lat": 47.4881796
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 33,
+   "status": "taken",
+   "x": 144.5,
+   "y": 37.63,
+   "lon": 7.6001709,
+   "lat": 47.4881886
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 34,
+   "status": "free",
+   "x": 144.49,
+   "y": 38.63,
+   "lon": 7.6001708,
+   "lat": 47.4881976
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 35,
+   "status": "taken",
+   "x": 144.48,
+   "y": 39.63,
+   "lon": 7.6001707,
+   "lat": 47.4882066
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 36,
+   "status": "taken",
+   "x": 144.46,
+   "y": 41.53,
+   "lon": 7.6001705,
+   "lat": 47.4882237
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 37,
+   "status": "free",
+   "x": 144.46,
+   "y": 42.53,
+   "lon": 7.6001703,
+   "lat": 47.4882327
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 38,
+   "status": "free",
+   "x": 144.45,
+   "y": 43.53,
+   "lon": 7.6001702,
+   "lat": 47.4882417
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 39,
+   "status": "free",
+   "x": 144.44,
+   "y": 44.53,
+   "lon": 7.6001701,
+   "lat": 47.4882507
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 40,
+   "status": "free",
+   "x": 144.43,
+   "y": 45.53,
+   "lon": 7.60017,
+   "lat": 47.4882597
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 41,
+   "status": "taken",
+   "x": 144.41,
+   "y": 47.43,
+   "lon": 7.6001698,
+   "lat": 47.4882768
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 42,
+   "status": "taken",
+   "x": 144.4,
+   "y": 48.43,
+   "lon": 7.6001697,
+   "lat": 47.4882858
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 43,
+   "status": "taken",
+   "x": 144.4,
+   "y": 49.43,
+   "lon": 7.6001695,
+   "lat": 47.4882948
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 44,
+   "status": "taken",
+   "x": 144.39,
+   "y": 50.43,
+   "lon": 7.6001694,
+   "lat": 47.4883038
+  },
+  {
+   "zone_id": "CMR_NORTH_01",
+   "slot": 45,
+   "status": "free",
+   "x": 144.38,
+   "y": 51.43,
+   "lon": 7.6001693,
+   "lat": 47.4883128
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 1,
+   "status": "taken",
+   "x": 125.65,
+   "y": -110.03,
+   "lon": 7.5999203,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 2,
+   "status": "taken",
+   "x": 126.15,
+   "y": -110.03,
+   "lon": 7.599927,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 3,
+   "status": "taken",
+   "x": 126.65,
+   "y": -110.03,
+   "lon": 7.5999336,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 4,
+   "status": "taken",
+   "x": 127.15,
+   "y": -110.03,
+   "lon": 7.5999403,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 5,
+   "status": "free",
+   "x": 127.65,
+   "y": -110.03,
+   "lon": 7.5999469,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 6,
+   "status": "taken",
+   "x": 128.15,
+   "y": -110.03,
+   "lon": 7.5999536,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 7,
+   "status": "taken",
+   "x": 128.65,
+   "y": -110.03,
+   "lon": 7.5999602,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 8,
+   "status": "free",
+   "x": 129.15,
+   "y": -110.03,
+   "lon": 7.5999669,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 9,
+   "status": "taken",
+   "x": 129.65,
+   "y": -110.03,
+   "lon": 7.5999735,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 10,
+   "status": "free",
+   "x": 130.15,
+   "y": -110.03,
+   "lon": 7.5999802,
+   "lat": 47.4868599
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 11,
+   "status": "free",
+   "x": 146.83,
+   "y": -98.75,
+   "lon": 7.6002019,
+   "lat": 47.4869614
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 12,
+   "status": "taken",
+   "x": 146.83,
+   "y": -98.25,
+   "lon": 7.6002019,
+   "lat": 47.4869659
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 13,
+   "status": "taken",
+   "x": 146.83,
+   "y": -97.75,
+   "lon": 7.6002019,
+   "lat": 47.4869704
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 14,
+   "status": "free",
+   "x": 146.83,
+   "y": -97.25,
+   "lon": 7.6002019,
+   "lat": 47.4869749
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 15,
+   "status": "taken",
+   "x": 146.83,
+   "y": -96.75,
+   "lon": 7.6002019,
+   "lat": 47.4869794
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 16,
+   "status": "free",
+   "x": 146.83,
+   "y": -96.25,
+   "lon": 7.6002019,
+   "lat": 47.4869839
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 17,
+   "status": "free",
+   "x": 146.83,
+   "y": -95.75,
+   "lon": 7.6002019,
+   "lat": 47.4869884
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 18,
+   "status": "taken",
+   "x": 146.83,
+   "y": -95.25,
+   "lon": 7.6002019,
+   "lat": 47.4869929
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 19,
+   "status": "free",
+   "x": 146.83,
+   "y": -94.75,
+   "lon": 7.6002019,
+   "lat": 47.4869974
+  },
+  {
+   "zone_id": "CMR_SOUTH_02",
+   "slot": 20,
+   "status": "free",
+   "x": 146.83,
+   "y": -94.25,
+   "lon": 7.6002019,
+   "lat": 47.4870019
+  }
+ ]
+}
