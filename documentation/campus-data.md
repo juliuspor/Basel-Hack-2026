@@ -9,7 +9,7 @@ Map data for the **Find my Bike Slot** map UI around Christoph-Merian-Ring, Rein
   - `CMR_NORTH_01`: 45 slots in the long north shelter beside the Bruggrain bus stop, five per bay.
   - `CMR_SOUTH_02`: 20 slots in two curved shelters at the silver building's rounded corner on the south bend.
 
-  Positions come from OSM, satellite imagery, and the site photos of 29 October 2026 (`assets/IMG_20261029_*.jpg`). The second south shelter's exact position is unverified. The `status` values are illustrative, not live data.
+  Positions come from OSM, satellite imagery, and the site photos of 29 October 2026 (`assets/challenge-site-photos/`, provided by Endress+Hauser). The second south shelter's exact position is unverified. The `status` values are illustrative, not live data.
 
 ## Attribution
 
