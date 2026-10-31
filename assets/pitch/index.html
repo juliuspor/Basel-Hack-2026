@@ -551,8 +551,8 @@ sizeFx(); addEventListener('resize', sizeFx);
 const fx = window.confetti ? confetti.create(fxCanvas, { resize: false, useWorker: false }) : null;
 const fxFire = (o) => fx?.({ shapes: ['square', 'circle'], ...o, scalar: (o.scalar ?? 1) * fxK, startVelocity: o.startVelocity * fxK, gravity: (o.gravity ?? 1) * fxK });
 
-// On the tech slide the hamster says these three lines, 8 s apart, then only does silent stunts.
-const PRIVACY = ['Zero tracking', 'PIIs removed', 'Edge computing'];
+// On the tech slide the hamster says these three lines, 8 s apart and starting 2 s after it parks, then only does silent stunts.
+const PRIVACY = ['PIIs removed', 'Zero tracking', 'Edge computing'];
 const WAIT = 55;   // how far short of its spot the hamster waits in front of a full rack
 let epoch = 0;   // bumped by every ride, so a leftover roll-in or ride-in from the previous slide stops quietly
 // Each stunt pivots where it would on a real bike: rear wheel, ground, or the rider's centre.
@@ -595,7 +595,7 @@ rider.addEventListener('click', () => trick());
 
 function ride(from, to) {
   // Into DEMO: hop a bump, find the stand FULL, check the app, a spot frees up, park.
-  // Into TECH: park, then the three lines 8 s apart. Backwards: just ride.
+  // Into TECH: park, pause, then the three lines 8 s apart. Backwards: just ride.
   story.forEach(clearTimeout); story = []; ham.getAnimations().forEach(a => a.cancel()); busy = true;
   const my = ++epoch;
   const forward = to > from, full = forward && to === 1, target = spot(to) - (full ? WAIT : 0), start = hx, t0 = performance.now(), dur = 1500;
@@ -616,8 +616,8 @@ function ride(from, to) {
       return;
     }
     if (!(forward && to === 2)) { settle(); return; }
-    PRIVACY.forEach((line, k) => later(k * 8000, () => say(line, 2200)));
-    later(18500, settle);
+    PRIVACY.forEach((line, k) => later(2000 + k * 8000, () => say(line, 2200)));
+    later(20500, settle);
   };
   riding = requestAnimationFrame(step);
 }
