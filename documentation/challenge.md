@@ -38,7 +38,7 @@ The sponsor's only ask is to be creative.
 ## Available resources
 
 - Ten ESP32 camera boards shared among participating teams
-- Reference photos of the parking spaces; nearby bicycle parking, including
+- Reference photos of the parking spaces. Nearby bicycle parking, including
   at Memox, may also be used
 - CHF 100 per Endress team for AI providers or tools
 

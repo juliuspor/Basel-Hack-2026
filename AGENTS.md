@@ -81,9 +81,9 @@ For example:
 feat(app): added onboarding screen
 ```
 
-Conventional Commits is the format; Commitizen is a tool that helps write
-messages using it. This repository requires a scope even though the upstream
-specification makes it optional.
+Conventional Commits is the format, and Commitizen is a tool that helps
+write messages using it. This repository requires a scope even though the
+upstream specification makes it optional.
 
 ### Rules
 
@@ -116,8 +116,8 @@ regular expression, then check the semantic rules above:
 ```
 
 If a message fails these rules, rewrite it before committing. Do not create
-a noncompliant commit. These are agent instructions; this file alone does
-not install a Git hook or a CI validator.
+a noncompliant commit. These are agent instructions, and this file alone
+does not install a Git hook or a CI validator.
 
 Valid examples:
 
