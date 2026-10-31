@@ -1,0 +1,484 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Easy+Hitch Availability API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/stations": {
+      "get": {
+        "tags": [
+          "availability"
+        ],
+        "summary": "All stations with their free, taken and unknown slots",
+        "operationId": "list_stations_v1_stations_get",
+        "parameters": [
+          {
+            "name": "near",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "lat,lon: sort by distance from here and add distance_m",
+              "examples": [
+                "47.4875,7.6001"
+              ],
+              "title": "Near"
+            },
+            "description": "lat,lon: sort by distance from here and add distance_m"
+          },
+          {
+            "name": "min_free",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Only stations with at least this many free slots",
+              "default": 0,
+              "title": "Min Free"
+            },
+            "description": "Only stations with at least this many free slots"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified since the ETag in If-None-Match"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/stations/{station_id}": {
+      "get": {
+        "tags": [
+          "availability"
+        ],
+        "summary": "One station with the state of every slot",
+        "operationId": "get_station_v1_stations__station_id__get",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Station Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationDetail"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified since the ETag in If-None-Match"
+          },
+          "404": {
+            "description": "Unknown station, or no model for it"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/stations/{station_id}/model.usdz": {
+      "get": {
+        "tags": [
+          "availability"
+        ],
+        "summary": "The station's 3D model",
+        "operationId": "get_model_v1_stations__station_id__model_usdz_get",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Station Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "model/vnd.usdz+zip": {}
+            }
+          },
+          "404": {
+            "description": "Unknown station, or no model for it"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "availability"
+        ],
+        "summary": "Health",
+        "operationId": "health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "Health"
+      },
+      "LocationView": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "LocationView"
+      },
+      "SlotDetail": {
+        "properties": {
+          "number": {
+            "type": "integer",
+            "title": "Number",
+            "description": "Matches the node slot_<number> in the station's 3D model"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "free",
+              "taken",
+              "unknown"
+            ],
+            "title": "State"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationView"
+          },
+          "changed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed At",
+            "description": "When the slot last changed state"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "state",
+          "location",
+          "changed_at"
+        ],
+        "title": "SlotDetail"
+      },
+      "StationDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationView"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "free": {
+            "type": "integer",
+            "title": "Free"
+          },
+          "taken": {
+            "type": "integer",
+            "title": "Taken"
+          },
+          "unknown": {
+            "type": "integer",
+            "title": "Unknown"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "model_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Url",
+            "description": "Path of the station's 3D model on this server, null when there is none"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/SlotDetail"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "location",
+          "capacity",
+          "free",
+          "taken",
+          "unknown",
+          "updated_at",
+          "model_url",
+          "slots"
+        ],
+        "title": "StationDetail"
+      },
+      "StationList": {
+        "properties": {
+          "stations": {
+            "items": {
+              "$ref": "#/components/schemas/StationSummary"
+            },
+            "type": "array",
+            "title": "Stations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stations"
+        ],
+        "title": "StationList"
+      },
+      "StationSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable station id, e.g. cmr-north-01"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Display name"
+          },
+          "location": {
+            "$ref": "#/components/schemas/LocationView"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Number of slots"
+          },
+          "free": {
+            "type": "integer",
+            "title": "Free"
+          },
+          "taken": {
+            "type": "integer",
+            "title": "Taken"
+          },
+          "unknown": {
+            "type": "integer",
+            "title": "Unknown",
+            "description": "Slots no camera has reported recently"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "Latest camera report at this station, null before the first"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M",
+            "description": "Straight-line distance from `near`, when it was given"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "location",
+          "capacity",
+          "free",
+          "taken",
+          "unknown",
+          "updated_at"
+        ],
+        "title": "StationSummary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

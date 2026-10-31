@@ -1,0 +1,136 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Easy+Hitch Ingest API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/frames": {
+      "post": {
+        "tags": [
+          "ingest"
+        ],
+        "summary": "Upload one pixelated camera frame",
+        "operationId": "upload_frame_v1_frames_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-captured-at",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Board time of capture, ISO 8601",
+              "title": "X-Captured-At"
+            },
+            "description": "Board time of capture, ISO 8601"
+          },
+          {
+            "name": "x-person-boxes",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "JSON list of [x0, y0, x1, y1] pixel boxes",
+              "default": "[]",
+              "title": "X-Person-Boxes"
+            },
+            "description": "JSON list of [x0, y0, x1, y1] pixel boxes"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unknown camera token"
+          },
+          "413": {
+            "description": "Frame larger than 1 MB"
+          },
+          "415": {
+            "description": "Body is not a JPEG"
+          },
+          "422": {
+            "description": "Invalid headers, or a frame of the wrong size"
+          },
+          "502": {
+            "description": "Classifier unavailable, retry later"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IngestResponse": {
+        "properties": {
+          "camera_id": {
+            "type": "string",
+            "title": "Camera Id"
+          },
+          "station_id": {
+            "type": "string",
+            "title": "Station Id"
+          },
+          "slots_checked": {
+            "type": "integer",
+            "title": "Slots Checked"
+          },
+          "slots_changed": {
+            "type": "integer",
+            "title": "Slots Changed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "camera_id",
+          "station_id",
+          "slots_checked",
+          "slots_changed"
+        ],
+        "title": "IngestResponse"
+      }
+    }
+  }
+}
