@@ -21,10 +21,11 @@ Blender (code/scene-generator)                    Backend (code/backend)        
     frame of the empty shelter. Offline, free, and exact on the rendered frames.
 - **Privacy.** Frames are only held in memory; the backend keeps slot states and timestamps.
 - **App.** Flat map of the Endress+Hauser site in Reinach with a pin per shelter
-  showing its free spots (green while any are free, red when full). Tapping a pin
+  showing its free spots (Endress+Hauser blue while any are free, red when full,
+  grey until the first frame arrives). Tapping a pin
   opens a card with the counts, a 3D view button and cycling directions; pulling
   the card down shrinks it, pulling again dismisses it. The 3D view shows bikes on
-  taken slots and green/red numbered markers. Shelter coordinates in
+  taken slots and blue/red numbered markers. Shelter coordinates in
   `code/backend/data/areas.json` are placeholders.
 - **Search.** The search bar on the map finds shelters by name and places or
   addresses through Apple Maps (biased to the area around the site). Picking a
@@ -33,7 +34,7 @@ Blender (code/scene-generator)                    Backend (code/backend)        
 
 ## Run it
 
-Requirements: Blender 5.2, Python 3.13 (Homebrew), Xcode 27, XcodeGen.
+Requirements: Blender 5.2, Python 3.13 or later (Homebrew), Xcode 27, XcodeGen.
 
 ```bash
 brew install --cask blender && brew install xcodegen python@3.13
@@ -43,6 +44,12 @@ brew install --cask blender && brew install xcodegen python@3.13
 
 ```bash
 code/scene-generator/build_all.sh
+```
+
+   If `blender` is not on your `PATH`, point the script at the app:
+
+```bash
+BLENDER=/Applications/Blender.app/Contents/MacOS/Blender code/scene-generator/build_all.sh
 ```
 
 2. Start the backend:
