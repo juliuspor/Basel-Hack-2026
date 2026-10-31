@@ -10,8 +10,8 @@ One frame takes this path:
 
 1. A camera captures a frame and compares it with the last frame the backend
    accepted. Nothing happens until the view changes, or five minutes pass.
-2. The camera finds people, pixelates their faces, and uploads the JPEG with
-   the person boxes to `POST /v1/frames`.
+2. The camera finds people and licence plates, pixelates faces and plates, and
+   uploads the JPEG with the person boxes to `POST /v1/frames`.
 3. The Ingest function fingerprints every slot and asks Jev 1.14 about the
    slots that changed, one yes or no question per slot crop.
 4. The state rule turns the readings into slot states, which DynamoDB keeps.
@@ -30,8 +30,9 @@ One frame takes this path:
 
 The camera pipeline sends a frame only when it changed, or every five minutes
 as a heartbeat ([`EdgePipeline`](../code/edge/pipeline.py#L26-L53)). It
-first pixelates the faces it finds, and in recorded frames also the plates
-their sidecars list ([`pixelate`](../code/edge/pixelate.py#L12-L22)). It
+first pixelates the faces and the readable text it finds, licence plates
+among it, or in recorded frames the regions their sidecars list
+([`pixelate`](../code/edge/pixelate.py#L12-L22)). It
 sends the person boxes along, so the backend skips the slots behind people. The contract is
 [`ingest.openapi.json`](api/ingest.openapi.json). The camera's bearer token
 names the camera, and the camera's calibration names its station.
@@ -41,7 +42,7 @@ The same interfaces serve a live camera and recorded frames:
 | Interface | With a camera | With recorded frames |
 |---|---|---|
 | [`FrameSource`](../code/edge/sources.py#L14-L15) | `WebcamFrameSource` | [`FolderFrameSource`](../code/edge/sources.py#L18-L45) |
-| [`PIIDetector`](../code/edge/pii.py#L27-L28) | [`YoloPIIDetector`](../code/edge/pii.py#L57-L69) | [`SidecarPIIDetector`](../code/edge/pii.py#L36-L54) |
+| [`PIIDetector`](../code/edge/pii.py#L27-L28) | [`YoloPIIDetector`](../code/edge/pii.py#L57-L69) for faces and [`TextPIIDetector`](../code/edge/text.py#L32-L52) for plates, merged by [`CombinedPIIDetector`](../code/edge/pii.py#L72-L81) | [`SidecarPIIDetector`](../code/edge/pii.py#L36-L54) |
 | [`FrameUploader`](../code/edge/upload.py#L17-L19) | [`IngestClient`](../code/edge/upload.py#L22-L58) | [`DryRunUploader`](../code/edge/upload.py#L61-L67) |
 
 ## Backend and classifiers: `OccupancyClassifier`

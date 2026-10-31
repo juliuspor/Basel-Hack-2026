@@ -52,9 +52,10 @@ not a trained model.
 as the API, so an AI agent can tell a rider where to park
 ([`build_server`](../code/backend/availability/mcp_server.py#L31-L58)).
 
-**Privacy at the source.** Faces are pixelated before a frame leaves the
-camera ([`EdgePipeline`](../code/edge/pipeline.py#L26-L53)), and the backend
-only ever looks at slot crops.
+**Privacy at the source.** Faces and readable licence plates are pixelated
+before a frame leaves the camera
+([`EdgePipeline`](../code/edge/pipeline.py#L26-L53)), and the backend only
+ever looks at slot crops.
 
 **Found before you arrive.** Search for the building you are cycling to, and
 the app opens the closest shelter that still has room
@@ -97,7 +98,7 @@ the 3D scenes are built in parallel ([architecture.md](architecture.md)):
 | [`OccupancyClassifier`](../code/backend/classification/classifier.py#L27-L28) | [`JevCropClassifier`](../code/backend/classification/jev.py#L34-L64) and [`StaticClassifier`](../code/backend/classification/static.py#L25-L57) |
 | [`OccupancyRepository`](../code/backend/occupancy/repository.py#L15-L21) | [`InMemoryOccupancyRepository`](../code/backend/occupancy/repository.py#L24-L44) and [`DynamoOccupancyRepository`](../code/backend/occupancy/dynamodb.py#L22-L58) |
 | [`FingerprintStore`](../code/backend/ingest/fingerprints.py#L11-L14) | [`InMemoryFingerprintStore`](../code/backend/ingest/fingerprints.py#L17-L28) and [`DynamoFingerprintStore`](../code/backend/ingest/dynamodb.py#L9-L22) |
-| [`FrameSource`](../code/edge/sources.py#L14-L15), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A camera with YOLO11n and HTTP, or recorded frames with marked regions and a dry run |
+| [`FrameSource`](../code/edge/sources.py#L14-L15), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A camera with YOLO11n, PP-OCRv5 and HTTP, or recorded frames with marked regions and a dry run |
 | [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L62) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52) |
 
 One place picks the implementations from the environment
@@ -162,8 +163,9 @@ All but the second print nothing.
   ([`Settings`](../code/backend/settings.py#L33-L88)), and each Lambda
   function imports only the code its own service needs.
 - Generated files stay out of git: the Python virtual environments and caches,
-  SAM build output, YOLO weights, the scene generator's `out/`, Xcode build
-  folders, and macOS Finder files ([backend](../code/backend/.gitignore),
+  SAM build output, YOLO and PP-OCRv5 weights, the scene generator's `out/`,
+  Xcode build folders, and macOS Finder files
+  ([backend](../code/backend/.gitignore),
   [edge](../code/edge/.gitignore),
   [scene generator](../code/scene-generator/.gitignore),
   [iOS](../code/ios/.gitignore), [root](../.gitignore)). The API specs are
@@ -180,11 +182,14 @@ All but the second print nothing.
   `documentation/`, and media in `assets/`, as the template asks
   ([`AGENTS.md`](../AGENTS.md)).
 - **The challenge's rules hold in code.**
-  - Faces are pixelated before a frame leaves the camera
-    ([`pixelate`](../code/edge/pixelate.py#L12-L22)). YOLO11n finds people and
-    the top fifth of each person box is treated as the face
-    ([`face_region`](../code/edge/pii.py#L31-L33)). The sidecar of a recorded
-    frame also lists its readable plates
+  - Faces and readable licence plates are pixelated before a frame leaves the
+    camera ([`pixelate`](../code/edge/pixelate.py#L12-L22)). YOLO11n finds
+    people and the top fifth of each person box is treated as the face
+    ([`face_region`](../code/edge/pii.py#L31-L33)). PP-OCRv5 finds readable
+    text, so plates of every format count, the yellow e-bike plates included,
+    and each text line grows by two line heights to cover the whole plate
+    ([`TextPIIDetector`](../code/edge/text.py#L32-L52)). The sidecar of a
+    recorded frame lists the same regions by hand
     ([`SidecarPIIDetector`](../code/edge/pii.py#L36-L54)).
   - No images are kept. The ingest service decodes each frame in memory and
     stores only slot states and times
@@ -201,7 +206,10 @@ All but the second print nothing.
   [backend](../code/backend/requirements.txt) and
   [edge](../code/edge/requirements.txt) requirements. YOLO11n and Ultralytics
   are AGPL-3.0 and only installed for a live camera
-  ([`requirements-camera.txt`](../code/edge/requirements-camera.txt)). The deck
+  ([`requirements-camera.txt`](../code/edge/requirements-camera.txt)).
+  PaddlePaddle's PP-OCRv5 text detector is Apache-2.0, downloaded only for a
+  live camera and checked against its pinned SHA-256
+  ([`_pinned_model`](../code/edge/text.py#L64-L70)). The deck
   bundles canvas-confetti with its
   [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti), and its
   architecture slide uses brand icons from Simple Icons under CC0. The marks
@@ -268,3 +276,4 @@ On 31 October 2026, on macOS with Python 3.13.16:
 | DynamoDB and SSM code | The repositories and the parameter reader against moto | Versioned saves, conflicts rejected, 72-bit fingerprints kept |
 | Jev request | `JevCropClassifier` against a stand-in for the Decisions API | Request as documented, crops within Jev's size limits, errors become `502` |
 | YOLO11n | `YoloPIIDetector` on `IMG_20261029_084104` | Finds the person at the right edge |
+| PP-OCRv5 | `TextPIIDetector` and `pixelate` on the seven recorded frames, sidecars ignored, each result checked by eye | The five readable plates in `cam-north-1`, `cam-north-2` and `cam-south-a` come out unreadable, the two yellow e-bike plates and a tilted motorbike plate among them. 2% of a frame is pixelated on average, 6% at most, in 0.1 s per frame |

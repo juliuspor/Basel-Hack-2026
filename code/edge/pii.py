@@ -2,7 +2,7 @@
 
 A detector keeps two lists apart:
 - people: the backend skips slots behind them, as it cannot see those slots.
-- pii_regions: faces (and plates) that are pixelated before upload.
+- pii_regions: faces and readable text such as licence plates, pixelated before upload.
 """
 
 import json
@@ -67,6 +67,18 @@ class YoloPIIDetector:
         result = self._model.predict(frame.image, classes=[PERSON_CLASS], conf=PERSON_CONFIDENCE, verbose=False)[0]
         people = tuple(tuple(round(value) for value in box) for box in result.boxes.xyxy.tolist())
         return Detections(people=people, pii_regions=tuple(face_region(person) for person in people))
+
+
+class CombinedPIIDetector:
+    """Runs several detectors on each frame and merges what they find."""
+
+    def __init__(self, *detectors: PIIDetector) -> None:
+        self._detectors = detectors
+
+    def detect(self, frame: Frame) -> Detections:
+        found = [detector.detect(frame) for detector in self._detectors]
+        return Detections(people=tuple(box for detections in found for box in detections.people),
+                          pii_regions=tuple(box for detections in found for box in detections.pii_regions))
 
 
 def _box(values: list, width: int, height: int, source: Path) -> Box:

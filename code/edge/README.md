@@ -10,15 +10,16 @@ For each frame the pipeline:
 1. skips the frame unless it differs from the last frame the backend accepted,
    or nothing was sent for 5 minutes (a heartbeat that keeps the camera's
    slots from turning `unknown`),
-2. finds people and the regions to hide: each person's face, and for a
-   recorded frame also the licence plates its sidecar lists,
+2. finds people and the regions to hide: each person's face and any readable
+   text, licence plates of every format among it, or for a recorded frame the
+   regions its sidecar lists,
 3. pixelates those regions in 8x8 blocks,
 4. uploads the JPEG with the person boxes, so the backend skips the slots
    behind people,
 5. makes the frame the new baseline only once the backend accepted it, so a
    failed upload is retried with the next frame.
 
-Frames stay in memory, and nothing is written to disk. How the camera fits
+Frames stay in memory and are never written to disk. How the camera fits
 into the whole system is in
 [`documentation/architecture.md`](../../documentation/architecture.md).
 
@@ -29,7 +30,7 @@ into the whole system is in
 | Interface | Implementations |
 |---|---|
 | `FrameSource` | `WebcamFrameSource` captures from a camera attached to this computer. `FolderFrameSource` replays recorded JPEGs, one subfolder per camera, in a loop. |
-| `PIIDetector` | `YoloPIIDetector` finds people with YOLO11n and takes the top fifth of each as the face. `SidecarPIIDetector` reads people and regions from a JSON file next to each recorded frame. |
+| `PIIDetector` | `YoloPIIDetector` finds people with YOLO11n and takes the top fifth of each as the face. `TextPIIDetector` finds readable text with PP-OCRv5 and grows each line by two line heights, so it covers whole licence plates, also the small yellow e-bike plates and tilted motorbike plates that plate detectors trained on car plates miss. `CombinedPIIDetector` runs both for a live camera. `SidecarPIIDetector` reads people and regions from a JSON file next to each recorded frame. |
 | `FrameUploader` | `IngestClient` posts to `/v1/frames` and retries while the backend is unavailable. `DryRunUploader` logs what would be sent. |
 
 ## Run
@@ -52,7 +53,7 @@ the development tokens the local backend accepts. Against AWS, use the
 deployment's `IngestUrl` and a tokens file with the real tokens, which is not
 committed.
 
-A live camera, with YOLO11n finding people:
+A live camera, with YOLO11n finding people and PP-OCRv5 finding text:
 
 ```bash
 .venv/bin/pip install -r requirements-camera.txt
@@ -63,8 +64,9 @@ A live camera, with YOLO11n finding people:
 ```
 
 The camera's frames must match its calibration in the backend (`--size`,
-1280x960 by default), and `--upload http` needs the camera's token. YOLO11n's
-weights download on first use.
+1280x960 by default), and `--upload http` needs the camera's token. The
+weights of YOLO11n and PP-OCRv5 download on first use. PP-OCRv5's file is
+pinned by its SHA-256, and any other file is refused.
 
 ## Recorded frames
 

@@ -21,7 +21,7 @@ def main() -> None:
                         help="'webcam', or a folder with one subfolder of recorded JPEGs per camera")
     parser.add_argument("--pii", choices=["sidecar", "yolo"], required=True,
                         help="sidecar: read people and regions from a JSON file next to each frame. "
-                             "yolo: find people with YOLO11n")
+                             "yolo: find people with YOLO11n, and text such as licence plates with PP-OCRv5")
     parser.add_argument("--upload", choices=["http", "dry-run"], required=True,
                         help="http: POST to the Ingest API. dry-run: only log what would be sent")
     parser.add_argument("--url", help="Ingest API base URL, e.g. http://localhost:8000")

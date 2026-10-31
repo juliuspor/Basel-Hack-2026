@@ -5,9 +5,9 @@ Our entry for **Find my Bike Slot**, the Endress+Hauser challenge at BaselHack
 the suggested features, the available resources and the privacy rules.
 
 Easy+Hitch shows riders which bike slots are free at the Endress+Hauser site
-in Reinach before they arrive. Cameras pixelate faces and send a frame only
-when their view changes. A serverless backend on AWS reads every
-changed slot with Jev 1.14 and keeps only the current state of each slot,
+in Reinach before they arrive. Cameras pixelate faces and licence plates and
+send a frame only when their view changes. A serverless backend on AWS reads
+every changed slot with Jev 1.14 and keeps only the current state of each slot,
 never the images. Riders see the free slots in the iOS app, with a map,
 cycling directions and a 3D view of every shelter, and AI agents get the same
 answers through an MCP server.
@@ -16,8 +16,8 @@ answers through an MCP server.
 
 1. A camera compares each frame with the last one it sent. Nothing leaves the
    camera until the view changes, or five minutes pass.
-2. The camera finds people, pixelates their faces, and uploads the JPEG to the
-   Ingest API.
+2. The camera finds people and licence plates, pixelates faces and plates, and
+   uploads the JPEG to the Ingest API.
 3. The backend fingerprints every slot and asks Jev one yes or no question per
    changed slot. A state changes on a sure answer, or on two unsure answers
    that agree.
@@ -80,6 +80,8 @@ described in the [backend](code/backend/README.md) and
   photos of 29 October 2026.
 - **Person detection.** YOLO11n through Ultralytics, under AGPL-3.0, installed
   only for a live camera.
+- **Plate detection.** PP-OCRv5's mobile text detector by PaddlePaddle, under
+  Apache-2.0, downloaded only for a live camera.
 - **Pitch deck.** canvas-confetti, under the ISC licence.
 
 ## Licence

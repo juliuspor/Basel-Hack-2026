@@ -6,9 +6,10 @@ from pathlib import Path
 
 import httpx
 
-from pii import PIIDetector, SidecarPIIDetector, YoloPIIDetector
+from pii import CombinedPIIDetector, PIIDetector, SidecarPIIDetector, YoloPIIDetector
 from pipeline import EdgePipeline
 from sources import FolderFrameSource, FrameSource, WebcamFrameSource
+from text import TextPIIDetector
 from upload import DryRunUploader, FrameUploader, IngestClient
 
 UPLOAD_TIMEOUT_SECONDS = 35  # the Ingest function may take up to 30 s
@@ -33,7 +34,7 @@ def _source(options: argparse.Namespace) -> tuple[FrameSource, list[str]]:
 
 def _detector(options: argparse.Namespace) -> PIIDetector:
     if options.pii == "yolo":
-        return YoloPIIDetector(options.yolo_weights)
+        return CombinedPIIDetector(YoloPIIDetector(options.yolo_weights), TextPIIDetector())
     return SidecarPIIDetector()
 
 
