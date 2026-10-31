@@ -1,29 +1,36 @@
-# BaselHack Code Repo Template
+# Easy+Hitch: Find my Bike Slot
 
-## Challenge
-
-Our challenge is **Find my Bike Slot**, sponsored by Endress+Hauser.
-See the [challenge brief](documentation/challenge.md) for the problem,
+Our entry for **Find my Bike Slot**, the Endress+Hauser challenge at BaselHack
+2026. See the [challenge brief](documentation/challenge.md) for the problem,
 suggested features, available resources, and privacy restrictions.
 
-## Prototype
+Easy+Hitch shows riders which bike slots are free at the Endress+Hauser site
+in Reinach before they arrive. A camera at each shelter sends frames to a
+backend that reads every slot as taken or free and keeps only those states,
+never the images. An iOS app shows a pin per shelter with its free spots,
+cycling directions, and a 3D view of each shelter. The cameras are simulated
+for now: Blender renders each shelter filling up over a morning.
 
-An iOS app shows the site map with live free bike spots and a 3D view of each
-shelter. Simulated cameras feed a backend that detects taken slots without
-storing images. See [how it fits together and how to run it](documentation/prototype.md).
+## Repository
 
-This is the template repository, which makes our lives (and especially the lives of the jury) easier,
-if you follow our structure.
+| Folder | Contents |
+|---|---|
+| [`code/backend`](code/backend) | FastAPI backend: frame ingest, privacy mask, vision analyzers, and the slot API |
+| [`code/ios`](code/ios) | SwiftUI app: map, search, shelter cards, 3D view, and an offline demo mode |
+| [`code/scene-generator`](code/scene-generator) | Blender scripts for the shelter models and simulated camera frames with ground truth |
+| [`documentation`](documentation) | How it works and runs, the API contract, and how we meet the judging criteria |
+| [`assets`](assets) | Site photos, campus map data, and the pitch deck |
 
-## Explanation
+## Documentation
 
-Please make sure that everything, that is code related, goes into `code` directory.
+- [How it fits together and how to run it](documentation/prototype.md)
+- [Architecture: the parts, their seams, and the target architecture](documentation/architecture.md)
+- [Judging criteria, with evidence from the code](documentation/judging.md)
+- [Challenge checklist](documentation/challenge-criteria.md)
+- [API contract (OpenAPI)](documentation/api/openapi.json)
+- [Campus map data](documentation/campus-data.md)
+- [Pitch deck](assets/pitch/index.html)
 
-If you have documentation about the code (e.g. UML Diagrams, a readme etc.), that should go into the `documentation` directory.
+## Licence
 
-If you have assets (like videos, presentations etc.), this can go into the `assets` directory.
-
-You can use the MIT license in this template. Make sure to adjust the copy right holders in the placeholder `<copyright holder>` and add every team member to it.
-You are also free to choose any other license - depending on the consensus of your team.
-
-Thanks a lot!
+MIT, see [license.txt](license.txt).
