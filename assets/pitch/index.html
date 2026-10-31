@@ -643,7 +643,7 @@ function fireworks() {
 }
 const endmark = document.getElementById('endmark');
 function resetEnding() {
-  stage.classList.remove('finale', 'pan'); endmark.classList.remove('on'); fx?.reset();
+  stage.classList.remove('finale', 'pan'); endmark.classList.remove('on'); fx?.reset(); bubble.style.translate = '';
   stands[2].classList.remove('gone'); labels[2].classList.remove('gone');
 }
 function finale() {
@@ -653,8 +653,8 @@ function finale() {
   const my = ++epoch; busy = true;
   hx = spot(2); placeRider(); flip.style.transform = 'scaleX(1)'; ham.style.transform = ''; hamster.pose();
   stage.classList.add('finale');
-  later(1800, () => { say('Easy+Hitch!', 2300); bell(); });
-  later(4300, () => stunt(my));
+  later(1800, () => { say('Easy+Hitch!', 1300); bell(); });
+  later(2400, () => stunt(my));   // crouch at 0.6 s, hop at 0.85 s after the name
 }
 function stunt(my) {
   // Stage-free timeline in bar pixels: x is the rider's centre, y the lift above the road.
@@ -665,18 +665,21 @@ function stunt(my) {
   const step = (now) => {
     if (my !== epoch) return;
     const t = now - t0; let x, y = 0, rot = 0, sy = 1;
-    // Speeds carry over between phases so the start is gentle: roll off, crouch, spring onto the roof.
-    if (t < 500) { const u = seg(t, 0, 500); x = spot(2) + 30 * u * u; sy = 1 - 0.07 * u * u; }   // roll off and crouch
-    else if (t < 1050) { const u = seg(t, 500, 1050); x = spot(2) + 30 + 70 * u; y = roof * u + 130 * u * (1 - u); rot = -12 * Math.sin(Math.PI * u); sy = 1 - 0.07 * (1 - u) ** 3; }   // spring onto the roof
-    else if (t < 1300) { const u = seg(t, 1050, 1300); x = spot(2) + 100 + 40 * u; y = roof; }   // along the roof
-    else if (t < 2300) { const u = seg(t, 1300, 2300); x = spot(2) + 140 + 150 * u; y = roof * (1 - u) + 380 * u * (1 - u); rot = -360 * ease(Math.min(1, u / 0.88)); }   // one backflip, level before touchdown
-    else { const u = seg(t, 2300, 2700); x = spot(2) + 290; sy = 1 - 0.14 * Math.sin(Math.PI * u); }   // land
+    // The front wheel parks 12 px short of the stand, so he crouches in place and bunny-hops: the hop
+    // reaches roof height before he has moved 10 px forward, then carries him onto the roof.
+    if (t < 250) { const u = seg(t, 0, 250); x = spot(2); sy = 1 - 0.1 * ease(u); }   // crouch
+    else if (t < 800) { const u = seg(t, 250, 800); x = spot(2) + 110 * u * u; y = 303 * u - 233 * u * u; rot = -12 * Math.sin(Math.PI * u); sy = 1 - 0.1 * (1 - Math.min(1, u / 0.25)) ** 2; }   // hop onto the roof
+    else if (t < 1050) { const u = seg(t, 800, 1050); x = spot(2) + 110 + 30 * u; y = roof; sy = 1 - 0.08 * Math.sin(Math.PI * u); }   // touch down on the roof
+    else if (t < 2050) { const u = seg(t, 1050, 2050); x = spot(2) + 140 + 150 * u; y = roof * (1 - u) + 380 * u * (1 - u); rot = -360 * ease(Math.min(1, u / 0.88)); }   // one backflip, level before touchdown
+    else { const u = seg(t, 2050, 2450); x = spot(2) + 290; sy = 1 - 0.14 * Math.sin(Math.PI * u); }   // land
     hx = x; placeRider();
-    ham.style.transform = `translateY(${-y}px) rotate(${rot}deg) scaleY(${sy})`;
+    // Squashing about the 60% origin would lift the wheels; shift down by the same amount to keep them planted.
+    ham.style.transform = `translateY(${-y + 37.8 * (1 - sy)}px) rotate(${rot}deg) scaleY(${sy})`;
+    bubble.style.translate = `0 ${-y}px`;   // "Easy+Hitch!" rides up with him instead of being hopped into
     hamster.roll(hx);
-    if (t >= 2300 && !landed) { landed = true; fireworks(); bell(); }
-    if (t < 2700) return requestAnimationFrame(step);
-    ham.style.transform = '';
+    if (t >= 2050 && !landed) { landed = true; fireworks(); bell(); }
+    if (t < 2450) return requestAnimationFrame(step);
+    ham.style.transform = ''; bubble.style.translate = '';
     ending();
   };
   requestAnimationFrame(step);
