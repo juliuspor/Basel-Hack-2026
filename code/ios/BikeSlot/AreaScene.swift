@@ -2,9 +2,12 @@ import RealityKit
 import UIKit
 
 /// The 3D model of one area plus a status marker and a hidden bike on every slot.
+/// `SiteScene` places it on the site; camera and light live there.
 @MainActor
 final class AreaScene {
     let root = Entity()
+    /// Middle of the rack relative to `root`, at ground level: the point slots.json measured.
+    private(set) var rackCentre: SIMD3<Float> = .zero
     private var bikes: [String: Entity] = [:]
     private var markers: [String: ModelEntity] = [:]
 
@@ -20,12 +23,19 @@ final class AreaScene {
     }
 
     private init(model: Entity, bike: Entity) {
-        // Centre the area on the origin so the orbit camera turns around it.
         let bounds = model.visualBounds(relativeTo: nil)
         model.position = [-bounds.center.x, 0, -bounds.center.z]
         root.addChild(model)
+        // The site has its own pavement; the model's paving pad would flicker against it.
+        model.findEntity(named: "ground")?.isEnabled = false
 
-        for slot in Self.slots(in: model) {
+        let slots = Self.slots(in: model)
+        if !slots.isEmpty {
+            rackCentre = slots.map { $0.position(relativeTo: root) }.reduce(.zero, +) / Float(slots.count)
+            rackCentre.y = 0
+        }
+
+        for slot in slots {
             let key = String(slot.name.dropFirst("slot_".count))
             // Slot children use the generator's axes: x along the rack, y towards the rear, z up.
             let marker = ModelEntity(mesh: .generateBox(width: 0.28, height: 0.28, depth: 0.02, cornerRadius: 0.05),
@@ -40,22 +50,6 @@ final class AreaScene {
             slot.addChild(parked)
             bikes[key] = parked
         }
-
-        // Start from the front, slightly above, far enough to see the whole shelter.
-        // The field of view is horizontal so the shelter fits the narrow portrait screen;
-        // aiming below its centre keeps it clear of the status card at the bottom.
-        let width = max(bounds.extents.x, 3)
-        let camera = PerspectiveCamera()
-        camera.camera.fieldOfViewOrientation = .horizontal
-        camera.camera.fieldOfViewInDegrees = 70
-        camera.look(at: [0, -0.5, 0], from: [width * 0.24, width * 0.56, width * 0.78], relativeTo: nil)
-        root.addChild(camera)
-
-        let sun = DirectionalLight()
-        sun.light.intensity = 4000
-        sun.shadow = DirectionalLightComponent.Shadow(maximumDistance: 12, depthBias: 2)
-        sun.look(at: .zero, from: [3, 6, 5], relativeTo: nil)
-        root.addChild(sun)
     }
 
     func apply(_ slots: [Slot]) {

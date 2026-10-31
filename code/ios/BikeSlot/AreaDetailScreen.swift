@@ -5,7 +5,7 @@ import SwiftUI
 struct AreaDetailScreen: View {
     let area: AreaSummary
     @Environment(AreaStore.self) private var store
-    @State private var scene: AreaScene?
+    @State private var scene: SiteScene?
     @State private var loadError: String?
     @State private var lookAround: MKLookAroundScene?
     @State private var showLookAround = false
@@ -13,7 +13,7 @@ struct AreaDetailScreen: View {
     private var detail: AreaDetail? { store.details[area.id] }
 
     var body: some View {
-        let slots = detail?.slots ?? []
+        let details = store.details
         ZStack {
             LinearGradient(colors: [Brand.blue.opacity(0.22), Color(hex: 0xF2F5F7)],
                            startPoint: .top, endPoint: .bottom)
@@ -23,7 +23,7 @@ struct AreaDetailScreen: View {
                 RealityView { content in
                     content.add(scene.root)
                 } update: { _ in
-                    scene.apply(slots)
+                    scene.apply(details)
                 }
                 .realityViewCameraControls(.orbit)
                 .ignoresSafeArea()
@@ -35,8 +35,15 @@ struct AreaDetailScreen: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            StatusCard(summary: detail?.summary ?? area, detail: detail)
-                .padding(.horizontal, 12)
+            VStack(alignment: .trailing, spacing: 6) {
+                // The diorama's buildings and streets come from OpenStreetMap (ODbL).
+                Text("Buildings and streets © OpenStreetMap contributors")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                StatusCard(summary: detail?.summary ?? area, detail: detail)
+            }
+            .padding(.horizontal, 12)
         }
         .navigationTitle(area.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -51,7 +58,7 @@ struct AreaDetailScreen: View {
         .lookAroundViewer(isPresented: $showLookAround, initialScene: lookAround)
         .task {
             do {
-                scene = try await AreaScene.load(area)
+                scene = try await SiteScene.load(around: area, with: store.areas)
             } catch {
                 loadError = error.localizedDescription
             }
@@ -61,7 +68,15 @@ struct AreaDetailScreen: View {
             // phone is offline, which keeps the button hidden instead of opening an empty viewer.
             lookAround = try? await MKLookAroundSceneRequest(coordinate: area.coordinate).scene
         }
-        .task { await store.pollDetail(area.id) }
+        .task {
+            // The neighbouring shelters are in view too, so keep their slots live as well.
+            let ids = Set(store.areas.map(\.id) + [area.id])
+            await withTaskGroup(of: Void.self) { group in
+                for id in ids {
+                    group.addTask { await store.pollDetail(id) }
+                }
+            }
+        }
     }
 }
 

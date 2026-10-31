@@ -38,9 +38,12 @@ code.
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`Slot`](../code/backend/schemas.py#L31-L34),
 [`AreaDetail`](../code/backend/schemas.py#L37-L42)). The app shows the slots as
-numbered tiles ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L68-L109))
-and in a 3D model of the shelter with a bike on every taken slot
-([`AreaScene`](../code/ios/BikeSlot/AreaScene.swift#L4-L84)).
+numbered tiles ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L83-L124))
+and in 3D: a diorama of the real corner, with the buildings and streets from
+OpenStreetMap and every shelter at its measured position under a live
+"A · 9 free" sign ([`SiteScene`](../code/ios/BikeSlot/SiteScene.swift#L5-L281)),
+each shelter with a bike on every taken slot
+([`AreaScene`](../code/ios/BikeSlot/AreaScene.swift#L4-L78)).
 
 **No training data.** The backend draws a numbered tag in front of every slot
 ([`draw_labels`](../code/backend/providers/base.py#L44-L55)) and asks a vision
@@ -63,8 +66,8 @@ the app opens the closest shelter that still has room
 ([`go`](../code/ios/BikeSlot/MapScreen.swift#L93-L103)). Where Apple has
 street-level imagery, the shelter's 3D view has a Look Around button that shows
 the street next to it, so you recognise the place when you get there
-([`MKLookAroundSceneRequest`](../code/ios/BikeSlot/AreaDetailScreen.swift#L59-L63),
-[`lookAroundViewer`](../code/ios/BikeSlot/AreaDetailScreen.swift#L43-L51)).
+([`MKLookAroundSceneRequest`](../code/ios/BikeSlot/AreaDetailScreen.swift#L66-L70),
+[`lookAroundViewer`](../code/ios/BikeSlot/AreaDetailScreen.swift#L50-L58)).
 Without imagery or offline, the button stays hidden.
 
 Planned: occupancy forecasts ("full by 7:52?") and pointing to one free slot
@@ -119,7 +122,7 @@ maps each one.
 - A person walking through hides slots, so the backend keeps the last slot
   states while someone is in view
   ([`person_present`](../code/backend/app.py#L147-L150)), and the app says so
-  ([`personPresent`](../code/ios/BikeSlot/AreaDetailScreen.swift#L100-L104)).
+  ([`personPresent`](../code/ios/BikeSlot/AreaDetailScreen.swift#L115-L119)).
 - Model answers must match a JSON schema whose only allowed values are the tag
   numbers ([`result_schema`](../code/backend/providers/base.py#L80-L90)), and
   an answer that was cut off raises an error instead of being misread

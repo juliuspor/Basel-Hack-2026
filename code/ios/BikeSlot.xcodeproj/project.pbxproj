@@ -20,7 +20,9 @@
 		A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1D847DCB2CFEB86F74D37F /* Models.swift */; };
 		A9AA37345AF5A145CB73A858 /* AreaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F702622BDB15F9640BF27CB /* AreaStore.swift */; };
 		BDC8B737E3A2A76046AB7499 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75445123237505DA937E8C4 /* Theme.swift */; };
+		C6C3A96D152512756A57874D /* south-bend.json in Resources */ = {isa = PBXBuildFile; fileRef = 28EDB483B532E5C100B7BB2C /* south-bend.json */; };
 		CC50590B9A1D1C6C8CDFC96E /* curved-shelter-a.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4138704B865DFCF9D0437DCB /* curved-shelter-a.usdz */; };
+		E09BF7E03208B55A4FA26518 /* SiteScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7648B5142A77BD9244848B4 /* SiteScene.swift */; };
 		ED87FD01BED32BCC22ECC995 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D513B4AAB57A88D9CD3184FA /* APIClient.swift */; };
 		F7D609E2D91DE2C678997D3F /* AreaScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 479C75454FFABBB4B4411942 /* AreaScene.swift */; };
 /* End PBXBuildFile section */
@@ -28,6 +30,7 @@
 /* Begin PBXFileReference section */
 		18DA5BE1C26A8F65605D2871 /* MapScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapScreen.swift; sourceTree = "<group>"; };
 		194C028748FF3D48AFE832EB /* Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Glass.swift; sourceTree = "<group>"; };
+		28EDB483B532E5C100B7BB2C /* south-bend.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "south-bend.json"; sourceTree = "<group>"; };
 		4138704B865DFCF9D0437DCB /* curved-shelter-a.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "curved-shelter-a.usdz"; sourceTree = "<group>"; };
 		479C75454FFABBB4B4411942 /* AreaScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaScene.swift; sourceTree = "<group>"; };
 		6E1D93A46E6B2D981B36F9B5 /* BikeSlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeSlotApp.swift; sourceTree = "<group>"; };
@@ -38,6 +41,7 @@
 		8FD68C0F2D2B50F3B8D5135A /* AreaDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaDetailScreen.swift; sourceTree = "<group>"; };
 		A2BC01D21D6048DD5F81D212 /* bike.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = bike.usdz; sourceTree = "<group>"; };
 		A4C991959AFECC1AB9A4EBFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A7648B5142A77BD9244848B4 /* SiteScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteScene.swift; sourceTree = "<group>"; };
 		CB38E27D822D22D55527FBB7 /* LocationSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearch.swift; sourceTree = "<group>"; };
 		D513B4AAB57A88D9CD3184FA /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		D54B5CFD9A92B76051F50A58 /* demo-areas.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "demo-areas.json"; sourceTree = "<group>"; };
@@ -81,8 +85,10 @@
 				CB38E27D822D22D55527FBB7 /* LocationSearch.swift */,
 				18DA5BE1C26A8F65605D2871 /* MapScreen.swift */,
 				8F1D847DCB2CFEB86F74D37F /* Models.swift */,
+				A7648B5142A77BD9244848B4 /* SiteScene.swift */,
 				F75445123237505DA937E8C4 /* Theme.swift */,
 				5CACA9FF2EE0E1E31BC9B33E /* Demo */,
+				F31985A618FA584756F24322 /* Site */,
 			);
 			path = BikeSlot;
 			sourceTree = "<group>";
@@ -93,6 +99,14 @@
 				88BEF5E4055FCC756AF762F1 /* BikeSlot.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F31985A618FA584756F24322 /* Site */ = {
+			isa = PBXGroup;
+			children = (
+				28EDB483B532E5C100B7BB2C /* south-bend.json */,
+			);
+			path = Site;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,6 +171,7 @@
 				5D18B54B86BD969E22ADF0E9 /* curved-shelter-b.usdz in Resources */,
 				895784C3B4F5715AF95AA023 /* curved-shelter-c.usdz in Resources */,
 				7370237E8A83AF407D853653 /* demo-areas.json in Resources */,
+				C6C3A96D152512756A57874D /* south-bend.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +214,7 @@
 				04F0ABB95D39E6EC44773F0D /* LocationSearch.swift in Sources */,
 				A25F819556F02353B05C74CC /* MapScreen.swift in Sources */,
 				A94DAE1026EEE3AA50FDFEFC /* Models.swift in Sources */,
+				E09BF7E03208B55A4FA26518 /* SiteScene.swift in Sources */,
 				BDC8B737E3A2A76046AB7499 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

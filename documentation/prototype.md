@@ -24,8 +24,12 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   showing its free spots (Endress+Hauser blue while any are free, red when full,
   grey until the first frame arrives). Tapping a pin
   opens a card with the counts, a 3D view button and cycling directions; pulling
-  the card down shrinks it, pulling again dismisses it. The 3D view shows bikes on
-  taken slots and blue/red numbered markers; its binoculars button opens Apple
+  the card down shrinks it, pulling again dismisses it. The 3D view is a diorama
+  of the shelters' corner: the buildings and streets from
+  `assets/campus-map/source.osm` (turned into `code/ios/BikeSlot/Site/south-bend.json`
+  by `python3 code/scene-generator/site_context.py`), street trees, and all three
+  shelters at their positions with bikes on taken slots, blue/red numbered
+  markers and a live "A · 9 free" sign; drag to orbit. Its binoculars button opens Apple
   Look Around at the street next to the shelter where Apple has imagery (it
   needs internet, so it is hidden offline). Shelters A and B in
   `code/backend/data/areas.json` stand on the two curved shelters measured in
