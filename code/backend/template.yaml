@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >-
+  Easy+Hitch backend: the Ingest function reads camera frames into slot states,
+  the Availability function serves them to the iOS app and to AI agents (MCP).
+
+Parameters:
+  OpenRouterKeyParameter:
+    Type: String
+    Default: /easyhitch/openrouter-api-key
+    Description: SSM SecureString holding the OpenRouter API key
+  CameraTokensParameter:
+    Type: String
+    Default: /easyhitch/camera-tokens
+    Description: SSM SecureString holding a JSON object of camera id to the SHA-256 of its token
+  JevModel:
+    Type: String
+    Default: typesafe/jev-1.14
+
+Globals:
+  Function:
+    Runtime: python3.13
+    Architectures: [arm64]
+    CodeUri: .
+    # Both functions get the whole configuration, which settings.py checks at
+    # start. Each function's policy grants only what that function reads.
+    Environment:
+      Variables:
+        BACKEND_PROFILE: aws
+        OCCUPANCY_TABLE: !Ref OccupancyTable
+        FINGERPRINT_TABLE: !Ref FingerprintTable
+        OPENROUTER_API_KEY_PARAMETER: !Ref OpenRouterKeyParameter
+        CAMERA_TOKENS_PARAMETER: !Ref CameraTokensParameter
+
+Resources:
+  OccupancyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: station_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: station_id
+          KeyType: HASH
+
+  FingerprintTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: camera_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: camera_id
+          KeyType: HASH
+
+  IngestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: POST /v1/frames from the camera boards
+      Handler: ingest.handler.handler
+      MemorySize: 1024
+      Timeout: 30
+      Environment:
+        Variables:
+          JEV_MODEL: !Ref JevModel
+      # The boards cannot sign AWS requests, so the ingest router checks their bearer token.
+      FunctionUrlConfig:
+        AuthType: NONE
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem]
+              Resource: [!GetAtt OccupancyTable.Arn, !GetAtt FingerprintTable.Arn]
+            - Effect: Allow
+              Action: ssm:GetParameter
+              Resource:
+                - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${OpenRouterKeyParameter}
+                - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CameraTokensParameter}
+            - Effect: Allow
+              Action: kms:Decrypt
+              Resource: "*"
+              Condition:
+                StringEquals:
+                  kms:ViaService: !Sub ssm.${AWS::Region}.amazonaws.com
+
+  AvailabilityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: GET /v1/stations for the iOS app, and the MCP server at /mcp
+      Handler: availability.handler.handler
+      MemorySize: 256
+      Timeout: 10
+      FunctionUrlConfig:
+        AuthType: NONE
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:BatchGetItem]
+              Resource: !GetAtt OccupancyTable.Arn
+
+Outputs:
+  IngestUrl:
+    Description: Base URL for the camera boards (POST /v1/frames)
+    Value: !GetAtt IngestFunctionUrl.FunctionUrl
+  AvailabilityUrl:
+    Description: Base URL for the iOS app (/v1/stations) and AI agents (/mcp)
+    Value: !GetAtt AvailabilityFunctionUrl.FunctionUrl
