@@ -25,6 +25,7 @@ targets:
         # The hackathon backend runs over plain HTTP on a laptop.
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
+        NSLocalNetworkUsageDescription: Bike Slot connects to the parking backend on your local network.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ch.baselhack.bikeslot

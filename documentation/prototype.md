@@ -20,13 +20,16 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   - `reference-diff` otherwise: compares each slot's wheel-holder region with a
     frame of the empty shelter. Offline, free, and exact on the rendered frames.
 - **Privacy.** Frames are only held in memory; the backend keeps slot states and timestamps.
-- **App.** Map of the Endress+Hauser site in Reinach with live free counts, and a
-  3D view per shelter with bikes on taken slots and green/red numbered markers.
-  Shelter coordinates in `code/backend/data/areas.json` are placeholders.
+- **App.** Flat map of the Endress+Hauser site in Reinach with a pin per shelter
+  showing its free spots (green while any are free, red when full). Tapping a pin
+  opens a card with the counts, a 3D view button and cycling directions; pulling
+  the card down shrinks it, pulling again dismisses it. The 3D view shows bikes on
+  taken slots and green/red numbered markers. Shelter coordinates in
+  `code/backend/data/areas.json` are placeholders.
 - **Search.** The search bar on the map finds shelters by name and places or
   addresses through Apple Maps (biased to the area around the site). Picking a
-  place drops a marker there, frames it with the nearby shelters, and sorts the
-  shelter list by distance to it.
+  place drops a marker there, frames it with the nearby shelters, and opens the
+  card of the closest shelter with free spots.
 
 ## Run it
 
