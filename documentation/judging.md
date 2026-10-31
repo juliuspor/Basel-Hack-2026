@@ -221,6 +221,11 @@ All but the second print nothing.
   The app's 3D spot view bundles three.js r149 with its
   [MIT licence](../code/ios/BikeSlot/Spot/LICENSE-three.txt); its 3D world is
   built from the OpenStreetMap extract and credited on screen.
+  The archived three.js prototype of the Ring street, not part of the app,
+  uses Kenney CC0 models shipped with their
+  [licence](../assets/threejs-prototype-3d-world-of-endress-hauser/kenney/car-kit/License.txt)
+  and loads three.js r170 (MIT) from jsDelivr
+  ([README](../assets/threejs-prototype-3d-world-of-endress-hauser/README.md#sources)).
   The campus map data is OpenStreetMap data under the ODbL, attributed in
   [`campus-data.md`](campus-data.md#attribution). The Endress+Hauser symbol
   comes from endress.com and is used for the sponsor's own challenge. The
