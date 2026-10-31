@@ -45,7 +45,7 @@
   .wordmark { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 150px; line-height: 1; margin-top: 46px; letter-spacing: -0.04em; display: flex; align-items: baseline; justify-content: center; }
   .wordmark .cap { color: #fff; }
   .wordmark .plus { color: var(--eh); margin: 0 6px; }
-  .wordmark .grow { display: inline-block; max-width: 0; overflow: hidden; white-space: nowrap; vertical-align: bottom; color: #fff;
+  .wordmark .grow { display: inline-block; max-width: 0; overflow: hidden; white-space: nowrap; vertical-align: bottom; color: #fff; padding-bottom: 0.25em; margin-bottom: -0.25em;
     transition: max-width 1.1s cubic-bezier(.2,.8,.2,1); }
   #s1.play .wordmark .grow { max-width: 420px; }
   #s1.play .wordmark .grow.h { transition-delay: 0.35s; }
@@ -157,14 +157,14 @@
   .stand-lbl { position: absolute; bottom: 8px; font-size: 13px; color: var(--muted); letter-spacing: 0.08em; transform: translateX(-50%); transition: opacity 0.8s ease, filter 0.8s ease; }
   .stand-lbl.gone { opacity: 0; filter: blur(3px); }
   /* Ending lockup: the logo falls in, then the wordmark letter by letter, then the tagline */
-  #endmark { position: absolute; left: 0; right: 0; top: 64px; text-align: center; pointer-events: none; z-index: 20; visibility: hidden; }
+  #endmark { position: absolute; left: 0; right: 0; top: 44px; text-align: center; pointer-events: none; z-index: 20; visibility: hidden; }
   #endmark.on { visibility: visible; }
-  #endmark .mark { width: 216px; height: 118px; display: block; margin: 0 auto; opacity: 0; }
-  #endmark .word { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 118px; line-height: 1; letter-spacing: -0.04em; margin-top: 22px; }
+  #endmark .mark { width: 190px; height: 104px; display: block; margin: 0 auto; opacity: 0; }
+  #endmark .word { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 104px; line-height: 1; letter-spacing: -0.04em; margin-top: 18px; }
   #endmark .word span { display: inline-block; opacity: 0; }
   #endmark .word .cap { color: #fff; } #endmark .word .plus { color: var(--eh); margin: 0 4px; }
   #endmark .word .soft { color: #fff; }
-  #endmark .tag { margin-top: 18px; font-size: 30px; font-weight: 500; color: var(--ink); opacity: 0; }
+  #endmark .tag { margin-top: 14px; font-size: 27px; font-weight: 500; color: var(--ink); opacity: 0; }
   #endmark .tag b { color: var(--eh); font-weight: 600; }
   #endmark.on .mark { animation: fall 1.05s forwards; }
   #endmark.on .word span { animation: fall 0.95s forwards; animation-delay: calc(0.45s + var(--i) * 0.065s); }
@@ -611,7 +611,7 @@ function ride(from, to) {
     riding = null; ham.style.transform = '';
     if (full) {
       say('FULL?!', 1300); move([0, -8, 8, -6, 0].map(d => ({ transform: `rotate(${d}deg)` })), 450);
-      later(1600, () => say('*checks app*', 1400));
+      later(1600, () => say('*checking app*', 1400));
       later(3300, () => rollIn(to, my));   // a spot freed up; no line here, so nothing has to match the live demo
       return;
     }
@@ -665,30 +665,31 @@ function stunt(my) {
   const step = (now) => {
     if (my !== epoch) return;
     const t = now - t0; let x, y = 0, rot = 0, sy = 1;
-    if (t < 600) x = spot(2) - 100 * ease(seg(t, 0, 600));                                   // back up for a run-up
-    else if (t < 1150) { const u = seg(t, 600, 1150); x = spot(2) - 100 + 95 * u * u; }       // pedal hard
-    else if (t < 1550) { const u = seg(t, 1150, 1550); x = spot(2) - 5 + 105 * u; y = roof * u + 160 * u * (1 - u); rot = -14 * Math.sin(Math.PI * u); }   // onto the roof
-    else if (t < 1800) { const u = seg(t, 1550, 1800); x = spot(2) + 100 + 40 * u; y = roof; }   // along the roof
-    else if (t < 2800) { const u = seg(t, 1800, 2800); x = spot(2) + 140 + 150 * u; y = roof * (1 - u) + 380 * u * (1 - u); rot = -360 * ease(Math.min(1, u / 0.88)); }   // one backflip, level before touchdown
-    else { const u = seg(t, 2800, 3200); x = spot(2) + 290; sy = 1 - 0.14 * Math.sin(Math.PI * u); }   // land
+    // Speeds carry over between phases so the start is gentle: roll off, crouch, spring onto the roof.
+    if (t < 500) { const u = seg(t, 0, 500); x = spot(2) + 30 * u * u; sy = 1 - 0.07 * u * u; }   // roll off and crouch
+    else if (t < 1050) { const u = seg(t, 500, 1050); x = spot(2) + 30 + 70 * u; y = roof * u + 130 * u * (1 - u); rot = -12 * Math.sin(Math.PI * u); sy = 1 - 0.07 * (1 - u) ** 3; }   // spring onto the roof
+    else if (t < 1300) { const u = seg(t, 1050, 1300); x = spot(2) + 100 + 40 * u; y = roof; }   // along the roof
+    else if (t < 2300) { const u = seg(t, 1300, 2300); x = spot(2) + 140 + 150 * u; y = roof * (1 - u) + 380 * u * (1 - u); rot = -360 * ease(Math.min(1, u / 0.88)); }   // one backflip, level before touchdown
+    else { const u = seg(t, 2300, 2700); x = spot(2) + 290; sy = 1 - 0.14 * Math.sin(Math.PI * u); }   // land
     hx = x; placeRider();
     ham.style.transform = `translateY(${-y}px) rotate(${rot}deg) scaleY(${sy})`;
     hamster.roll(hx);
-    if (t >= 2800 && !landed) { landed = true; fireworks(); bell(); }
-    if (t < 3200) return requestAnimationFrame(step);
+    if (t >= 2300 && !landed) { landed = true; fireworks(); bell(); }
+    if (t < 2700) return requestAnimationFrame(step);
     ham.style.transform = '';
     ending();
   };
   requestAnimationFrame(step);
 }
 function ending() {
-  // The tech stand dissolves, the camera glides to the hamster, the logo falls in, then a victory wheelie.
+  // The tech stand dissolves, the camera glides to the hamster, the logo falls in, then a victory wheelie and a "Yay <3".
   later(250, () => { stands[2].classList.add('gone'); labels[2].classList.add('gone'); });
   later(650, () => stage.classList.add('pan'));
   later(1500, () => { endmark.classList.remove('on'); void endmark.offsetWidth; endmark.classList.add('on'); });
   later(3300, () => {
     ham.style.transformOrigin = '24% 96%';
     ham.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-20deg)' }], { duration: 600, easing: 'cubic-bezier(.3,1.4,.5,1)', fill: 'forwards' });
+    say('Yay <3', 2600);
   });
 }
 function arrive() {
