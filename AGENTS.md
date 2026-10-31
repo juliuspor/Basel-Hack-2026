@@ -8,6 +8,21 @@ These instructions apply to all agents working anywhere in this repository.
 - Put code documentation in `documentation/`.
 - Put media, presentations, and other assets in `assets/`.
 
+## Branches and pull requests
+
+Pull requests are not preferred. Commit and push directly to `main` by
+default.
+
+- Before pushing, update with `git pull --rebase origin main` so history stays
+  linear.
+- Keep each commit small and focused, so `main` stays working after every
+  push.
+- Open a pull request only when it is really necessary, for example for a
+  large or risky change that someone else should review first, or when the
+  team asks for one.
+- If you do use a branch, stop committing to it once its pull request is
+  merged. Later commits on it never reach `main`.
+
 ## Attribution
 
 Only real team members may appear as authors or co-authors. This rule
