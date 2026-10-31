@@ -1,7 +1,7 @@
 """Turns photos into recorded frames for one camera: upright, at the camera's frame size.
 
 Run from code/edge:
-    .venv/bin/python prepare_photos.py cam-south-a ../../assets/IMG_20261029_083909.jpg \\
+    .venv/bin/python prepare_photos.py cam-south-a ../../assets/challenge-site-photos/IMG_20261029_083909.jpg \\
         --output ../../assets/camera-frames
 
 Each frame needs a sidecar JSON file next to it listing people and the regions

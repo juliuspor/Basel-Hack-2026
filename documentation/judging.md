@@ -34,10 +34,10 @@ we ran and their results. The sponsor's brief is summarised in
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`SlotDetail`](../code/backend/availability/views.py#L34-L38),
 [`StationDetail`](../code/backend/availability/views.py#L41-L51)). The app
-shows the slots as numbered tiles
-([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L51-L92)) and in a
-3D model of the shelter with a bike on every taken slot
-([`AreaScene`](../code/ios/BikeSlot/AreaScene.swift#L4-L84)).
+shows each spot in a 3D model of the block with a bike on every taken slot
+([`SpotView`](../code/ios/BikeSlot/SpotView.swift#L9-L74)), above a card with
+the free count
+([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L53-L86)).
 
 **No training data.** The backend crops every slot and asks Jev 1.14, a
 decision model, one yes or no question per crop
@@ -98,7 +98,7 @@ the 3D scenes are built in parallel ([architecture.md](architecture.md)):
 | [`OccupancyRepository`](../code/backend/occupancy/repository.py#L15-L21) | [`InMemoryOccupancyRepository`](../code/backend/occupancy/repository.py#L24-L44) and [`DynamoOccupancyRepository`](../code/backend/occupancy/dynamodb.py#L22-L58) |
 | [`FingerprintStore`](../code/backend/ingest/fingerprints.py#L11-L14) | [`InMemoryFingerprintStore`](../code/backend/ingest/fingerprints.py#L17-L28) and [`DynamoFingerprintStore`](../code/backend/ingest/dynamodb.py#L9-L22) |
 | [`FrameSource`](../code/edge/sources.py#L14-L15), [`PIIDetector`](../code/edge/pii.py#L27-L28), [`FrameUploader`](../code/edge/upload.py#L17-L19) on the camera | A camera with YOLO11n and HTTP, or recorded frames with marked regions and a dry run |
-| [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L10) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L20-L79) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52) |
+| [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L62) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52) |
 
 One place picks the implementations from the environment
 ([`classifier`](../code/backend/composition.py#L84-L98)), so the same code runs
@@ -244,7 +244,7 @@ Three ways to show it:
    at `/v1/stations`, or ask an AI agent through the MCP server where to park.
 2. **The app.** With the **Demo data** setting, or launched with
    `-demoMode YES`, built-in shelters change every four seconds without a
-   backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L12-L18),
+   backend ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L16),
    [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52)).
 3. **The deck.** The phone screen on slide 2 plays the app on its own.
 

@@ -83,14 +83,14 @@ cheap polling.
 
 ## iOS app
 
-The app shows the site map with a pin per station, a card with the counts and
-cycling directions, and a 3D view with a bike on every taken slot. It ships
-sample shelters in `code/ios/BikeSlot/Demo/` (JSON plus USDZ models), and in
-demo mode a random slot changes every four seconds, so the interface can be
-shown and developed without a backend. Turn it on with the **Demo data**
-switch in the app's settings, or launch with `-demoMode YES` (in Xcode, as an
-argument of the scheme's Run action). The backend client and the demo both implement
-[`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L10), and
+The app shows the site map with a pin per station, a card with the free count
+and cycling directions, and a 3D view with a bike on every taken slot. It
+ships sample spots in `code/ios/BikeSlot/Demo/demo-areas.json`, and in demo
+mode a random slot changes every four seconds, so the interface can be shown
+and developed without a backend. Turn it on with the **Demo data** switch in
+the app's settings, or launch with `-demoMode YES` (in Xcode, as an argument
+of the scheme's Run action). The backend client and the demo both implement
+[`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8), and
 `Backend.current` picks one.
 
 ## 3D scenes and station models

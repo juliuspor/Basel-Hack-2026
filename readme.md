@@ -75,8 +75,9 @@ described in the [backend](code/backend/README.md) and
   imagery and the site photos. OpenStreetMap data © OpenStreetMap
   contributors, available under the Open Database License. Keep this
   attribution wherever the data, or anything derived from it, is shown.
-- **Photos.** The site photos in `assets/` and the recorded camera frames made
-  from them are the challenge hosts' reference photos of 29 October 2026.
+- **Photos.** The site photos in `assets/challenge-site-photos/` and the
+  recorded camera frames made from them are the challenge hosts' reference
+  photos of 29 October 2026.
 - **Person detection.** YOLO11n through Ultralytics, under AGPL-3.0, installed
   only for a live camera.
 - **Pitch deck.** canvas-confetti, under the ISC licence.
