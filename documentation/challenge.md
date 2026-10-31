@@ -8,8 +8,8 @@
 - **Tags:** image recognition, embedded
 - **Last checked:** 31 October 2026
 
-This is a summary of the sponsor's brief; consult the source for updates.
-[`challenge-criteria.md`](challenge-criteria.md) rates our solution against it.
+This is a summary of the sponsor's brief. The source has the latest version.
+[`judging.md`](judging.md) shows how Easy+Hitch meets the event's criteria.
 
 ## Problem and audience
 
