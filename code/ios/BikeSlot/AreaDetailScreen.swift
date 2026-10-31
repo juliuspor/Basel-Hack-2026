@@ -1,3 +1,4 @@
+import MapKit
 import RealityKit
 import SwiftUI
 
@@ -6,6 +7,8 @@ struct AreaDetailScreen: View {
     @Environment(AreaStore.self) private var store
     @State private var scene: AreaScene?
     @State private var loadError: String?
+    @State private var lookAround: MKLookAroundScene?
+    @State private var showLookAround = false
 
     private var detail: AreaDetail? { store.details[area.id] }
 
@@ -37,12 +40,26 @@ struct AreaDetailScreen: View {
         }
         .navigationTitle(area.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if lookAround != nil {
+                Button { showLookAround = true } label: {
+                    Label("Look Around", systemImage: "binoculars.fill")
+                        .labelStyle(.titleAndIcon)
+                }
+            }
+        }
+        .lookAroundViewer(isPresented: $showLookAround, initialScene: lookAround)
         .task {
             do {
                 scene = try await AreaScene.load(area)
             } catch {
                 loadError = error.localizedDescription
             }
+        }
+        .task {
+            // Apple's street-level imagery nearest the shelter. Nil where Apple has none or the
+            // phone is offline, which keeps the button hidden instead of opening an empty viewer.
+            lookAround = try? await MKLookAroundSceneRequest(coordinate: area.coordinate).scene
         }
         .task { await store.pollDetail(area.id) }
     }

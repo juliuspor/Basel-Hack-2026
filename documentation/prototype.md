@@ -25,7 +25,9 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   grey until the first frame arrives). Tapping a pin
   opens a card with the counts, a 3D view button and cycling directions; pulling
   the card down shrinks it, pulling again dismisses it. The 3D view shows bikes on
-  taken slots and blue/red numbered markers. Shelter coordinates in
+  taken slots and blue/red numbered markers; its binoculars button opens Apple
+  Look Around at the street next to the shelter where Apple has imagery (it
+  needs internet, so it is hidden offline). Shelter coordinates in
   `code/backend/data/areas.json` are placeholders.
 - **Search.** The search bar on the map finds shelters by name and places or
   addresses through Apple Maps (biased to the area around the site). Picking a
