@@ -58,16 +58,23 @@ def site():
     """Static description of every area, loaded on first use."""
     areas = {}
     for entry in assets.areas():
-        layout = assets.layout(entry["id"])
-        shelter = layout["shelter"]
+        if "slots" in entry:
+            # Mapped, but no scene bundle or camera yet: numbered slots that stay unknown
+            # until a camera is calibrated for the spot.
+            kind, (length, depth), camera = entry["kind"], entry["size"], None
+            slots = {f"{n:02d}": {"label": n} for n in range(1, entry["slots"] + 1)}
+        else:
+            layout, camera = assets.layout(entry["id"]), assets.camera(entry["id"])
+            kind, length, depth = layout["kind"], layout["shelter"]["length"], layout["shelter"]["depth"]
+            slots = camera["slots"]
         areas[entry["id"]] = {
             "id": entry["id"],
             "name": entry["name"],
-            "kind": layout["kind"],
+            "kind": kind,
             "center": entry["center"],
-            "polygon": footprint(entry["center"], entry["heading_deg"],
-                                 shelter["length"], shelter["depth"]),
-            "camera": assets.camera(entry["id"]),
+            "polygon": footprint(entry["center"], entry["heading_deg"], length, depth),
+            "camera": camera,
+            "slots": slots,
         }
     return areas
 
@@ -80,7 +87,7 @@ def area_or_404(area_id):
 
 
 def state_of(area):
-    return states.get(area["id"]) or AreaState(slots={key: False for key in area["camera"]["slots"]})
+    return states.get(area["id"]) or AreaState(slots={key: False for key in area["slots"]})
 
 
 def summary(area, state):
@@ -108,7 +115,7 @@ def list_areas() -> list[AreaSummary]:
 def get_area(area_id: str) -> AreaDetail:
     area = area_or_404(area_id)
     state = state_of(area)
-    slots = [Slot(id=key, label=area["camera"]["slots"][key]["label"], occupied=taken)
+    slots = [Slot(id=key, label=area["slots"][key]["label"], occupied=taken)
              for key, taken in sorted(state.slots.items())]
     return AreaDetail(**summary(area, state).model_dump(), slots=slots,
                       person_present=state.person_present, frames_analyzed=state.frames_analyzed,
@@ -120,6 +127,8 @@ async def ingest(area_id: str, request: Request,
                  x_camera_time: str | None = Header(None)) -> IngestResult:
     """Accept one JPEG frame. The frame never leaves memory and is not stored."""
     area = area_or_404(area_id)
+    if area["camera"] is None:
+        raise HTTPException(409, f"no camera calibrated for {area_id} yet")
     try:
         image = Image.open(io.BytesIO(await request.body())).convert("RGB")
     except Exception:

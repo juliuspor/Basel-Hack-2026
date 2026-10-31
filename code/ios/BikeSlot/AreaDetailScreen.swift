@@ -1,43 +1,28 @@
 import MapKit
-import RealityKit
 import SwiftUI
 
 struct AreaDetailScreen: View {
     let area: AreaSummary
     @Environment(AreaStore.self) private var store
-    @State private var scene: SiteScene?
-    @State private var loadError: String?
     @State private var lookAround: MKLookAroundScene?
     @State private var showLookAround = false
 
     private var detail: AreaDetail? { store.details[area.id] }
 
     var body: some View {
-        let details = store.details
         ZStack {
-            LinearGradient(colors: [Brand.blue.opacity(0.22), Color(hex: 0xF2F5F7)],
-                           startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
-
-            if let scene {
-                RealityView { content in
-                    content.add(scene.root)
-                } update: { _ in
-                    scene.apply(details)
-                }
-                .realityViewCameraControls(.orbit)
-                .ignoresSafeArea()
-            } else if let loadError {
-                ContentUnavailableView("3D model unavailable", systemImage: "cube.transparent",
-                                       description: Text(loadError))
+            Color(hex: 0xE6EDF1).ignoresSafeArea()
+            if let detail {
+                SpotView(area: area, slots: detail.slots, known: detail.summary.updatedAt != nil)
+                    .ignoresSafeArea()
             } else {
-                ProgressView("Loading 3D view")
+                ProgressView("Loading spot")
             }
         }
         .safeAreaInset(edge: .bottom) {
             VStack(alignment: .trailing, spacing: 6) {
-                // The diorama's buildings and streets come from OpenStreetMap (ODbL).
-                Text("Buildings and streets © OpenStreetMap contributors")
+                // The background photos were provided by Endress+Hauser for the challenge.
+                Text("Photo: Endress+Hauser")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 8)
@@ -57,26 +42,11 @@ struct AreaDetailScreen: View {
         }
         .lookAroundViewer(isPresented: $showLookAround, initialScene: lookAround)
         .task {
-            do {
-                scene = try await SiteScene.load(around: area, with: store.areas)
-            } catch {
-                loadError = error.localizedDescription
-            }
-        }
-        .task {
             // Apple's street-level imagery nearest the shelter. Nil where Apple has none or the
             // phone is offline, which keeps the button hidden instead of opening an empty viewer.
             lookAround = try? await MKLookAroundSceneRequest(coordinate: area.coordinate).scene
         }
-        .task {
-            // The neighbouring shelters are in view too, so keep their slots live as well.
-            let ids = Set(store.areas.map(\.id) + [area.id])
-            await withTaskGroup(of: Void.self) { group in
-                for id in ids {
-                    group.addTask { await store.pollDetail(id) }
-                }
-            }
-        }
+        .task { await store.pollDetail(area.id) }
     }
 }
 
@@ -97,6 +67,12 @@ private struct StatusCard: View {
                 Spacer()
             }
             .animation(.snappy, value: summary.free)
+
+            if summary.updatedAt == nil {
+                Label("No camera at this spot yet", systemImage: "video.slash")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
 
             if detail?.personPresent == true {
                 Label("Someone is in view, showing the last known state", systemImage: "figure.walk")

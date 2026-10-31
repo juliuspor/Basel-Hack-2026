@@ -5,8 +5,6 @@ import Foundation
 protocol AreaService: Sendable {
     func areas() async throws -> [AreaSummary]
     func area(_ id: String) async throws -> AreaDetail
-    /// Local file URL of a USDZ model, given the server path or absolute URL from `modelUrl`.
-    func modelFile(_ path: String) async throws -> URL
 }
 
 enum Backend {
@@ -43,21 +41,6 @@ struct APIClient: AreaService {
     func area(_ id: String) async throws -> AreaDetail {
         try await get("/areas/\(id)")
     }
-
-    /// Downloads a USDZ model once per launch and returns its local file URL.
-    func modelFile(_ path: String) async throws -> URL {
-        let local = FileManager.default.temporaryDirectory.appendingPathComponent((path as NSString).lastPathComponent)
-        if Self.downloaded.contains(path), FileManager.default.fileExists(atPath: local.path) {
-            return local
-        }
-        let (data, response) = try await URLSession.shared.data(from: Self.url(path))
-        try Self.check(response)
-        try data.write(to: local, options: .atomic)
-        Self.downloaded.insert(path)
-        return local
-    }
-
-    nonisolated(unsafe) private static var downloaded: Set<String> = []
 
     /// Server paths are relative to the backend; absolute URLs (e.g. a CDN) are used as they are.
     private static func url(_ path: String) -> URL {

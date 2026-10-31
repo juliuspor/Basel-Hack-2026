@@ -46,3 +46,16 @@ def test_provider_reads_rendered_frames(name):
             image = Image.open(folder / frame["file"]).convert("RGB")
             result = provider.analyze(privacy_mask(image, camera["area_roi"]), camera)
             assert result.occupied == set(frame["occupied"]), (folder.name, frame["time"])
+
+
+def test_spot_without_camera_is_listed_but_not_analysed():
+    """A mapped spot with no calibrated camera shows its slots as unknown and refuses frames."""
+    if not (LocalAssetStore().scene_out / "cameras").exists():
+        pytest.skip("run code/scene-generator/build_all.sh first")
+    from fastapi.testclient import TestClient
+
+    client = TestClient(app)
+    spots = {area["id"]: area for area in client.get("/areas").json()}
+    garage = spots["bike-garage-north"]
+    assert garage["kind"] == "bike_garage" and garage["capacity"] == 48 and garage["updated_at"] is None
+    assert client.post("/ingest/bike-garage-north", content=b"\xff\xd8").status_code == 409

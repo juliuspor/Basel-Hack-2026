@@ -37,13 +37,14 @@ code.
 
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`Slot`](../code/backend/schemas.py#L31-L34),
-[`AreaDetail`](../code/backend/schemas.py#L37-L42)). The app shows them in 3D:
-a diorama of the real corner, with the buildings and streets from OpenStreetMap
-and every shelter at its measured position under a live "A · 9 free" sign
-([`SiteScene`](../code/ios/BikeSlot/SiteScene.swift#L5-L281)), each slot with a
-numbered blue/red marker and a bike when taken
-([`AreaScene`](../code/ios/BikeSlot/AreaScene.swift#L4-L78)). The card below
-keeps only the free count ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L83-L110)).
+[`AreaDetail`](../code/backend/schemas.py#L37-L42)). Tapping a spot shows it
+in 3D as if you stood in front of it: the rack, built in three.js for the
+spot's kind ([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L192-L224) and
+three more), over the real photo of the spot, with a glowing blue pad on every
+free slot and a bike on every taken one
+([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L123-L140)), shown in the app by
+[`SpotView`](../code/ios/BikeSlot/SpotView.swift#L7-L68). The card below keeps
+only the free count ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L53-L86)).
 
 **No training data.** The backend draws a numbered tag in front of every slot
 ([`draw_labels`](../code/backend/providers/base.py#L44-L55)) and asks a vision
@@ -66,8 +67,8 @@ the app opens the closest shelter that still has room
 ([`go`](../code/ios/BikeSlot/MapScreen.swift#L93-L103)). Where Apple has
 street-level imagery, the shelter's 3D view has a Look Around button that shows
 the street next to it, so you recognise the place when you get there
-([`MKLookAroundSceneRequest`](../code/ios/BikeSlot/AreaDetailScreen.swift#L66-L70),
-[`lookAroundViewer`](../code/ios/BikeSlot/AreaDetailScreen.swift#L50-L58)).
+([`MKLookAroundSceneRequest`](../code/ios/BikeSlot/AreaDetailScreen.swift#L44-L48),
+[`lookAroundViewer`](../code/ios/BikeSlot/AreaDetailScreen.swift#L35-L43)).
 Without imagery or offline, the button stays hidden.
 
 Planned: occupancy forecasts ("full by 7:52?") and pointing to one free slot
@@ -84,7 +85,7 @@ on arrival.
   challenge provides; the simulated frames use their 800×600 resolution
   ([`WIDTH`](../code/scene-generator/render_frames.py#L27)). Frames that barely
   changed skip the analysis
-  ([`CHANGE_THRESHOLD`](../code/backend/app.py#L128-L138)), so a vision model
+  ([`CHANGE_THRESHOLD`](../code/backend/app.py#L137-L147)), so a vision model
   is only paid for when the picture changes, for example when a bike arrives
   or leaves. The `diff` analyzer runs
   offline at no cost ([`DiffProvider`](../code/backend/providers/diff.py#L6-L29)).
@@ -99,7 +100,7 @@ Not measured yet: time saved per rider, or how many more people cycle.
 
 **A working pipeline.** A camera posts a JPEG; the backend checks it for
 change, masks it, reads every slot, and stores the result
-([`ingest`](../code/backend/app.py#L118-L153)). The app polls the read API
+([`ingest`](../code/backend/app.py#L125-L162)). The app polls the read API
 every two seconds ([`pollAreas`](../code/ios/BikeSlot/AreaStore.swift#L17-L27))
 and updates the map, the cards, and the 3D view.
 
@@ -111,7 +112,7 @@ the 3D scenes were built in parallel ([architecture.md](architecture.md)):
 | API contract: [`AreaSummary`](../code/backend/schemas.py#L12-L28) and the other models in `schemas.py`, exported to [`openapi.json`](api/openapi.json) | FastAPI routes in [`app.py`](../code/backend/app.py) |
 | [`VisionProvider`](../code/backend/providers/base.py#L30-L33) | [`DiffProvider`](../code/backend/providers/diff.py#L6-L29) and [`ClaudeProvider`](../code/backend/providers/claude.py#L8-L41), picked by [`make_provider`](../code/backend/providers/__init__.py#L30-L38) |
 | [`StateStore`](../code/backend/storage.py#L34-L37) and [`AssetStore`](../code/backend/storage.py#L57-L72) | [`MemoryStateStore`](../code/backend/storage.py#L40-L54) and [`LocalAssetStore`](../code/backend/storage.py#L75-L102) |
-| [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L10) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L20-L79) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52) |
+| [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) in the app | [`APIClient`](../code/ios/BikeSlot/APIClient.swift#L19-L62) and [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52) |
 
 The planned cloud version swaps parts behind these interfaces; the
 [target architecture](architecture.md#6-from-the-prototype-to-the-target-architecture)
@@ -121,17 +122,17 @@ maps each one.
 
 - A person walking through hides slots, so the backend keeps the last slot
   states while someone is in view
-  ([`person_present`](../code/backend/app.py#L147-L150)), and the app says so
-  ([`personPresent`](../code/ios/BikeSlot/AreaDetailScreen.swift#L101-L105)).
+  ([`person_present`](../code/backend/app.py#L156-L159)), and the app says so
+  ([`personPresent`](../code/ios/BikeSlot/AreaDetailScreen.swift#L77-L81)).
 - Model answers must match a JSON schema whose only allowed values are the tag
   numbers ([`result_schema`](../code/backend/providers/base.py#L80-L90)), and
   an answer that was cut off raises an error instead of being misread
   ([`stop_reason`](../code/backend/providers/claude.py#L37-L38)).
 - State changes happen under a lock, and the store hands out copies
-  ([`lock`](../code/backend/app.py#L142-L151),
+  ([`lock`](../code/backend/app.py#L151-L160),
   [`MemoryStateStore`](../code/backend/storage.py#L40-L54)).
 - Bad input fails cleanly: a body that is not an image gets a 400
-  ([`HTTPException`](../code/backend/app.py#L123-L126)), and model downloads
+  ([`HTTPException`](../code/backend/app.py#L132-L135)), and model downloads
   cannot leave the model folder
   ([`model_file`](../code/backend/storage.py#L98-L102)).
 - Map outlines are computed from each shelter's centre, heading, and size
@@ -139,8 +140,8 @@ maps each one.
 - The app runs from iOS 18 and uses Liquid Glass on iOS 26 or later
   ([`glassBackground`](../code/ios/BikeSlot/Glass.swift#L3-L31)). Debug builds
   find the backend on the Mac that built them
-  ([`defaultURL`](../code/ios/BikeSlot/APIClient.swift#L22-L26),
-  [`postBuildScripts`](../code/ios/project.yml#L31-L41)).
+  ([`defaultURL`](../code/ios/BikeSlot/APIClient.swift#L20-L24),
+  [`postBuildScripts`](../code/ios/project.yml#L38-L48)).
 
 **Tested.** [`test_contract.py`](../code/backend/tests/test_contract.py) fails
 when the exported API spec or the app's demo data drift from `schemas.py`,
@@ -200,14 +201,14 @@ All but the second print nothing.
 - **The challenge's no-gos hold in code.**
   - No images are kept. The ingest route decodes each frame in memory and
     stores only slot states, timestamps, and frame counters
-    ([`ingest`](../code/backend/app.py#L118-L153)); the
+    ([`ingest`](../code/backend/app.py#L125-L162)); the
     state has no field for images or people
     ([`AreaState`](../code/backend/storage.py#L21-L31)). The only file the
     backend code writes is the API spec, from a developer script
     ([`OUT`](../code/backend/export_openapi.py#L11-L16)).
   - Before any analyzer sees a frame, everything outside the parking area is
     blacked out ([`privacy_mask`](../code/backend/providers/base.py#L36-L41),
-    applied in [`provider.analyze(privacy_mask(…))`](../code/backend/app.py#L141)).
+    applied in [`provider.analyze(privacy_mask(…))`](../code/backend/app.py#L150)).
   - Nobody is identified or tracked. An analyzer returns slot ids and a single
     yes or no for "a person is in view"
     ([`Result`](../code/backend/providers/base.py#L23-L27)). Nothing links a
@@ -215,6 +216,9 @@ All but the second print nothing.
 - **Third parties credited.** Python packages are listed in
   [`requirements.txt`](../code/backend/requirements.txt). The deck bundles
   canvas-confetti with its [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti).
+  The app's 3D spot view bundles three.js r149 with its
+  [MIT licence](../code/ios/BikeSlot/Spot/LICENSE-three.txt); its background
+  photos are the Endress+Hauser challenge photos, credited on screen.
   The campus map data is OpenStreetMap data under the ODbL, attributed in
   [`campus-data.md`](campus-data.md#attribution). The Endress+Hauser symbol
   comes from endress.com and is used for the sponsor's own challenge. The
@@ -250,7 +254,7 @@ Three ways to show it, from most to least live:
    the morning.
 2. **App only.** Turn on Settings → Demo data, or launch with `-demoMode YES`.
    Built-in shelters change every four seconds without a backend
-   ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L12-L18),
+   ([`Backend`](../code/ios/BikeSlot/APIClient.swift#L10-L16),
    [`DemoService`](../code/ios/BikeSlot/Demo/DemoService.swift#L3-L52)).
 3. **Fallback.** The phone mock on slide 2 of the deck loops on its own.
 
@@ -281,9 +285,10 @@ analyzer (no API key), and a physical ESP32-CAM (none connected yet).
 | Gap | Where | Next step |
 |---|---|---|
 | Cameras are simulated | [`simulate.py`](../code/backend/simulate.py) | Connect one ESP32-CAM to `POST /ingest/<area>` and calibrate its view |
-| Shelter C's position is approximate, and the north shelter has no 3D model | [`areas.json`](../code/backend/data/areas.json) | Confirm C on site; model the 45-slot north shelter from [`slots.json`](../assets/campus-map/slots.json) ([how it was mapped](campus-data.md)) |
+| Three of the six spots (open stand, bus stop shelter, bike garage) have no camera yet, so the app shows their slots as unknown | [`site`](../code/backend/app.py#L57-L79) | Calibrate a camera per spot |
+| The south-west shelter, the open stand and the garage are placed from the challenge map and the photo walk, not measured | [`areas.json`](../code/backend/data/areas.json) | Measure them on site like the ones in [`slots.json`](../assets/campus-map/slots.json) ([how it was mapped](campus-data.md)) |
 | State is lost when the backend restarts | [`MemoryStateStore`](../code/backend/storage.py#L40-L54) | DynamoDB behind `StateStore` (planned) |
-| The app allows plain HTTP, to reach a laptop backend | [`NSAllowsArbitraryLoads`](../code/ios/project.yml#L27-L29) | HTTPS once the API is hosted |
+| The app allows plain HTTP, to reach a laptop backend | [`NSAllowsArbitraryLoads`](../code/ios/project.yml#L34-L36) | HTTPS once the API is hosted |
 | Tests run locally only, and the app has none | [`tests/`](../code/backend/tests) | Run pytest on every push |
 | The licence still names the template placeholder | [`license.txt`](../license.txt) | Add every team member |
 

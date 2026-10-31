@@ -46,8 +46,8 @@ Adding an optional field is safe: the app ignores fields it does not know.
 
 ## 2. App without a backend: demo mode
 
-The app ships sample shelters (`code/ios/BikeSlot/Demo/`: JSON in the API's
-format plus the USDZ models). In demo mode a random slot changes every four
+The app ships sample spots (`code/ios/BikeSlot/Demo/demo-areas.json`, in the
+API's format). In demo mode a random slot changes every four
 seconds, so the UI has live updates to show. Turn it on with
 **Settings → Demo data**, or launch with `-demoMode YES` (in Xcode: Scheme →
 Run → Arguments). UI work then needs only Xcode.
@@ -109,13 +109,15 @@ laptop:
 
 For each area, `code/scene-generator/build_all.sh` writes into `out/`:
 
-- `<id>.usdz`: the 3D model, with empties named `slot_<id>` the app places
-  markers on
+- `<id>.usdz`: the 3D model of the area, served at `/models/<id>.usdz` (the
+  app draws its own spot view in three.js from the area's `kind` and slots)
 - `cameras/<id>/camera.json` plus `empty.jpg`: calibration and reference frame
 - `cameras/<id>/frame_*.jpg`: simulated camera frames with the true state
 
 The layout itself is `code/scene-generator/layouts/<id>.json`. A new area needs
-a layout, a build, and an entry in `code/backend/data/areas.json`.
+a layout, a build, and an entry in `code/backend/data/areas.json`. A spot that
+is mapped but has no camera yet needs only the entry, with its `kind`, `size`
+and number of `slots`; the backend then lists it with unknown slots.
 
 ## 6. From the prototype to the target architecture
 
@@ -127,14 +129,14 @@ that already exists, so the app and the API contract stay the same:
 
 | Step | Built in the prototype | Planned | Seam |
 |---|---|---|---|
-| Camera | Blender frames replayed by [`simulate.py`](../code/backend/simulate.py) | XIAO ESP32S3 Sense posting JPEGs | [`ingest`](../code/backend/app.py#L118-L153) |
+| Camera | Blender frames replayed by [`simulate.py`](../code/backend/simulate.py) | XIAO ESP32S3 Sense posting JPEGs | [`ingest`](../code/backend/app.py#L125-L162) |
 | Person privacy | Not built: the parking area itself stays visible | YOLO11n finds people on the board, faces are pixelated before upload | Before `POST /ingest` |
-| Change check | Thumbnail diff on the server ([`CHANGE_THRESHOLD`](../code/backend/app.py#L128-L138)) | On the board, against the last frame | Before `POST /ingest` |
-| Area privacy | Everything outside the parking area blacked out ([`privacy_mask`](../code/backend/providers/base.py#L36-L41)) | Ingest Lambda crops each slot | [`ingest`](../code/backend/app.py#L118-L153) |
+| Change check | Thumbnail diff on the server ([`CHANGE_THRESHOLD`](../code/backend/app.py#L137-L147)) | On the board, against the last frame | Before `POST /ingest` |
+| Area privacy | Everything outside the parking area blacked out ([`privacy_mask`](../code/backend/providers/base.py#L36-L41)) | Ingest Lambda crops each slot | [`ingest`](../code/backend/app.py#L125-L162) |
 | Slot reading | `diff` or `claude` provider | Jev 1.14 via OpenRouter, yes or no per slot crop | [`VisionProvider`](../code/backend/providers/base.py#L30-L33) |
 | State | [`MemoryStateStore`](../code/backend/storage.py#L40-L54), lost on restart | DynamoDB, changes only | [`StateStore`](../code/backend/storage.py#L34-L37) |
 | Read API | FastAPI routes in `app.py` | Availability API on AWS | [`openapi.json`](api/openapi.json) |
-| App | iOS app | Unchanged | [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L10) |
+| App | iOS app | Unchanged | [`AreaService`](../code/ios/BikeSlot/APIClient.swift#L5-L8) |
 
 The diagrams are rendered with archify 3.2.0 from their JSON sources in
 [`diagrams/`](diagrams).

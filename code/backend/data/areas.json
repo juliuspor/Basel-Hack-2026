@@ -1,20 +1,47 @@
 [
   {
+    "id": "curved-shelter-b",
+    "name": "South-west shelter",
+    "center": [47.48684, 7.59852],
+    "heading_deg": 0
+  },
+  {
+    "id": "open-stand-south",
+    "name": "South open stand",
+    "kind": "open_stand",
+    "center": [47.48683, 7.59945],
+    "heading_deg": 0,
+    "size": [5.0, 2.0],
+    "slots": 8
+  },
+  {
     "id": "curved-shelter-a",
-    "name": "Shelter A · South side",
+    "name": "South shelter",
     "center": [47.4868599, 7.5999503],
     "heading_deg": 0
   },
   {
-    "id": "curved-shelter-b",
-    "name": "Shelter B · East side",
+    "id": "curved-shelter-c",
+    "name": "Corner shelter",
     "center": [47.4869817, 7.6002019],
     "heading_deg": 270
   },
   {
-    "id": "curved-shelter-c",
-    "name": "Shelter C · Corner",
-    "center": [47.4868599, 7.6001377],
-    "heading_deg": 0
+    "id": "long-shelter-east",
+    "name": "Bus stop shelter",
+    "kind": "long_shelter",
+    "center": [47.488082, 7.600172],
+    "heading_deg": 270,
+    "size": [53.0, 2.3],
+    "slots": 45
+  },
+  {
+    "id": "bike-garage-north",
+    "name": "Bike garage",
+    "kind": "bike_garage",
+    "center": [47.48866, 7.5986],
+    "heading_deg": 0,
+    "size": [20.0, 12.0],
+    "slots": 48
   }
 ]

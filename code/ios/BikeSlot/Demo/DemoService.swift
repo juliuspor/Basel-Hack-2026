@@ -28,14 +28,6 @@ actor DemoService: AreaService {
         return detail
     }
 
-    nonisolated func modelFile(_ path: String) async throws -> URL {
-        let name = ((path as NSString).lastPathComponent as NSString).deletingPathExtension
-        guard let url = Bundle.main.url(forResource: name, withExtension: "usdz") else {
-            throw URLError(.fileDoesNotExist)
-        }
-        return url
-    }
-
     private func advance() {
         let steps = Int(Date().timeIntervalSince(lastStep) / Self.stepSeconds)
         guard steps > 0, !details.isEmpty else { return }

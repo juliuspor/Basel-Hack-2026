@@ -11,8 +11,10 @@ final class AreaStore {
 
     private var api: any AreaService { Backend.current }
 
-    var totalFree: Int { areas.reduce(0) { $0 + $1.free } }
-    var totalCapacity: Int { areas.reduce(0) { $0 + $1.capacity } }
+    /// Spots no camera reports on yet count as unknown, not as free.
+    private var reporting: [AreaSummary] { areas.filter { $0.updatedAt != nil } }
+    var totalFree: Int { reporting.reduce(0) { $0 + $1.free } }
+    var totalCapacity: Int { reporting.reduce(0) { $0 + $1.capacity } }
 
     func pollAreas() async {
         while !Task.isCancelled {

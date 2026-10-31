@@ -12,7 +12,14 @@ targets:
   BikeSlot:
     type: application
     platform: iOS
-    sources: [BikeSlot]
+    sources:
+      - path: BikeSlot
+        excludes: ["Spot/**"]
+      # The three.js spot view loads its scripts and photos by relative path, so the
+      # folder is copied as it is instead of flattened into the bundle.
+      - path: BikeSlot/Spot
+        type: folder
+        buildPhase: resources
     info:
       path: BikeSlot/Info.plist
       properties:

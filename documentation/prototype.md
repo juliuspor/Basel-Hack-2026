@@ -2,7 +2,7 @@
 
 ```
 Blender (code/scene-generator)                    Backend (code/backend)                 iOS app (code/ios)
-  layouts/*.json ──▶ <area>.usdz, bike.usdz ───────▶ GET /models/*.usdz ─────────────────▶ 3D view (RealityKit)
+  layouts/*.json ──▶ <area>.usdz, bike.usdz ───────▶ GET /models/*.usdz      3D spot view (three.js, in the app)
                 └──▶ cameras/<area>/frames + camera.json
                                    │
   simulate.py (virtual cameras) ───┴─ POST /ingest/<area> (JPEG) ─▶ change check ─▶ vision provider
@@ -20,21 +20,24 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   - `diff` otherwise: compares each slot's wheel-holder region with a
     frame of the empty shelter. Offline, free, and exact on the rendered frames.
 - **Privacy.** Frames are only held in memory; the backend keeps slot states and timestamps.
-- **App.** Flat map of the Endress+Hauser site in Reinach with a pin per shelter
-  showing its free spots (Endress+Hauser blue while any are free, red when full,
-  grey until the first frame arrives). Tapping a pin
-  opens a card with the counts, a 3D view button and cycling directions; pulling
-  the card down shrinks it, pulling again dismisses it. The 3D view is a diorama
-  of the shelters' corner: the buildings and streets from
-  `assets/campus-map/source.osm` (turned into `code/ios/BikeSlot/Site/south-bend.json`
-  by `python3 code/scene-generator/site_context.py`), street trees, and all three
-  shelters at their positions with bikes on taken slots, blue/red numbered
-  markers and a live "A · 9 free" sign; drag to orbit. Its binoculars button opens Apple
-  Look Around at the street next to the shelter where Apple has imagery (it
-  needs internet, so it is hidden offline). Shelters A and B in
-  `code/backend/data/areas.json` stand on the two curved shelters measured in
-  `assets/campus-map/slots.json`; C, on the same building, is approximate, and
-  the long north shelter (45 slots) has no 3D model yet.
+- **App.** Flat map of the Endress+Hauser block in Reinach with a pin per bike
+  spot showing its free slots (Endress+Hauser blue while any are free, red when
+  full, grey until a camera reports). The six spots are the ones in the
+  challenge photos: three curved shelters and an open stand along the south
+  side, the long shelter at the bus stop on the east side, and the bike garage
+  on the north side. Tapping a pin opens a card with the counts, a 3D view
+  button and cycling directions; pulling the card down shrinks it, pulling
+  again dismisses it. The 3D view (`code/ios/BikeSlot/Spot/`, three.js) shows
+  the spot as if you stood in front of it: its rack with a glowing blue pad on
+  every free slot and a bike on every taken one, over the real photo of the
+  spot, with a fixed, gently swaying camera. Spots without a camera show grey
+  pads. Open `spot.html?id=curved-shelter-a&kind=curved_shelter&slots=10` from
+  that folder in a browser to preview it with made-up slots. The binoculars
+  button opens Apple Look Around at the street next to the spot where Apple has
+  imagery (it needs internet, so it is hidden offline). The south shelter, the
+  corner shelter and the bus stop shelter stand on positions measured in
+  `assets/campus-map/slots.json`; the other three are placed from the challenge
+  map and the photo walk.
 - **Search.** The search bar on the map finds shelters by name and places or
   addresses through Apple Maps (biased to the area around the site). Picking a
   place drops a marker there, frames it with the nearby shelters, and opens the
