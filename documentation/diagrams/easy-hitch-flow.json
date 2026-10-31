@@ -1,0 +1,209 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Easy+Hitch: from camera frame to app",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "documentation/diagrams/easy-hitch-flow.html",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Camera / app"
+        },
+        "backend": {
+          "label": "Processing"
+        },
+        "security": {
+          "label": "Privacy step"
+        },
+        "database": {
+          "label": "State store"
+        },
+        "external": {
+          "label": "External model"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "board",
+      "label": "XIAO ESP32S3 Sense"
+    },
+    {
+      "id": "aws",
+      "label": "AWS"
+    },
+    {
+      "id": "jev",
+      "label": "Jev 1.14 via OpenRouter",
+      "variant": "exception"
+    },
+    {
+      "id": "phone",
+      "label": "iPhone"
+    }
+  ],
+  "mainPath": [
+    "capture",
+    "change",
+    "yolo",
+    "blur",
+    "crop",
+    "verdict",
+    "write",
+    "state",
+    "app"
+  ],
+  "nodes": [
+    {
+      "id": "capture",
+      "lane": "board",
+      "col": 0,
+      "type": "frontend",
+      "label": "Capture",
+      "sublabel": "320×240 greyscale",
+      "width": 136
+    },
+    {
+      "id": "change",
+      "lane": "board",
+      "col": 1,
+      "type": "security",
+      "label": "Change check",
+      "sublabel": "vs last frame",
+      "width": 136
+    },
+    {
+      "id": "yolo",
+      "lane": "board",
+      "col": 2,
+      "type": "backend",
+      "label": "YOLO11n",
+      "sublabel": "finds people",
+      "width": 136
+    },
+    {
+      "id": "blur",
+      "lane": "board",
+      "col": 3,
+      "type": "security",
+      "label": "Face blur",
+      "sublabel": "pixelate faces",
+      "width": 136
+    },
+    {
+      "id": "crop",
+      "lane": "aws",
+      "col": 3,
+      "type": "backend",
+      "label": "Crop slots",
+      "sublabel": "Ingest Lambda",
+      "width": 136
+    },
+    {
+      "id": "verdict",
+      "lane": "jev",
+      "col": 3,
+      "type": "external",
+      "label": "Jev yes/no",
+      "sublabel": "bike in this slot?",
+      "width": 136
+    },
+    {
+      "id": "write",
+      "lane": "aws",
+      "col": 4,
+      "type": "backend",
+      "label": "Write changes",
+      "sublabel": "Ingest Lambda",
+      "width": 136
+    },
+    {
+      "id": "state",
+      "lane": "aws",
+      "col": 5,
+      "type": "database",
+      "label": "DynamoDB",
+      "sublabel": "current slot states",
+      "width": 136
+    },
+    {
+      "id": "app",
+      "lane": "phone",
+      "col": 5,
+      "type": "frontend",
+      "label": "Easy+Hitch app",
+      "sublabel": "map and 3D view",
+      "width": 136
+    }
+  ],
+  "edges": [
+    {
+      "id": "capture-change",
+      "from": "capture",
+      "to": "change"
+    },
+    {
+      "id": "change-yolo",
+      "from": "change",
+      "to": "yolo",
+      "label": "changed",
+      "variant": "emphasis"
+    },
+    {
+      "id": "change-capture",
+      "from": "change",
+      "to": "capture",
+      "label": "no change",
+      "variant": "dashed",
+      "role": "return",
+      "fromSide": "top",
+      "toSide": "top",
+      "route": "up-channel"
+    },
+    {
+      "id": "yolo-blur",
+      "from": "yolo",
+      "to": "blur",
+      "label": "person boxes",
+      "variant": "security"
+    },
+    {
+      "id": "blur-crop",
+      "from": "blur",
+      "to": "crop",
+      "label": "blurred JPEG + boxes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "crop-verdict",
+      "from": "crop",
+      "to": "verdict",
+      "label": "changed slots",
+      "variant": "security"
+    },
+    {
+      "id": "verdict-write",
+      "from": "verdict",
+      "to": "write",
+      "label": "yes/no",
+      "variant": "emphasis"
+    },
+    {
+      "id": "write-state",
+      "from": "write",
+      "to": "state",
+      "label": "changes only",
+      "variant": "emphasis"
+    },
+    {
+      "id": "state-app",
+      "from": "state",
+      "to": "app",
+      "label": "JSON via Availability API",
+      "variant": "emphasis"
+    }
+  ]
+}

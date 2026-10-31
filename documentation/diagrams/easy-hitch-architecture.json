@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Easy+Hitch target architecture",
+    "locale": "en",
+    "output": "documentation/diagrams/easy-hitch-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "camera",
+      "type": "security",
+      "label": "XIAO ESP32S3 Sense",
+      "sublabel": "YOLO11n and face blur",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        210,
+        64
+      ]
+    },
+    {
+      "id": "ingest",
+      "type": "backend",
+      "label": "Ingest Lambda",
+      "sublabel": "crops slots",
+      "pos": [
+        460,
+        200
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "jev",
+      "type": "external",
+      "label": "Jev 1.14",
+      "sublabel": "via OpenRouter",
+      "pos": [
+        460,
+        360
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "state",
+      "type": "database",
+      "label": "DynamoDB",
+      "sublabel": "current slot states",
+      "pos": [
+        760,
+        200
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Availability API",
+      "sublabel": "/areas and /areas/{id}",
+      "pos": [
+        1030,
+        200
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "app",
+      "type": "frontend",
+      "label": "Easy+Hitch iOS app",
+      "sublabel": "map and 3D view",
+      "pos": [
+        1300,
+        200
+      ],
+      "size": [
+        180,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "On the board",
+      "wraps": [
+        "camera"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "AWS",
+      "wraps": [
+        "ingest",
+        "state",
+        "api"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "camera-to-ingest",
+      "from": "camera",
+      "to": "ingest",
+      "label": "blurred JPEG + person boxes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ingest-to-jev",
+      "from": "ingest",
+      "to": "jev",
+      "label": "slot crop → yes/no",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "ingest-to-state",
+      "from": "ingest",
+      "to": "state",
+      "label": "changes only",
+      "variant": "emphasis"
+    },
+    {
+      "id": "state-to-api",
+      "from": "state",
+      "to": "api",
+      "label": "read"
+    },
+    {
+      "id": "api-to-app",
+      "from": "api",
+      "to": "app",
+      "label": "JSON",
+      "variant": "emphasis"
+    }
+  ]
+}
