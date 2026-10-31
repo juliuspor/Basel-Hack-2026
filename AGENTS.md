@@ -19,18 +19,19 @@ true:
 
 - Ground every claim. A statement in `documentation/` about what the product
   does links to the code that does it. Link line ranges as
-  `` [`privacy_mask`](code/backend/providers/base.py#L36-L41) ``: the name in
-  backticks must stay on those lines, and
-  `code/backend/tests/test_docs.py` fails when it does not or when a linked
-  file is gone. Update the links in the commit that moves the code.
-- Separate built from planned. Mark anything that is not in the code, such as
-  real ESP32 cameras, the AWS services, or forecasts, as planned, in the
-  documentation and in the pitch.
+  `` [`pixelate`](code/edge/pixelate.py#L12-L22) ``, and keep the name in
+  backticks on those lines. Update the links in the commit that moves the
+  code.
+- Describe what the code does. Write the documentation as technical
+  documentation of the running system, and never present something that is
+  not in the code as built.
 - Keep the demo working. Do not push a change that breaks the run steps in
-  `documentation/prototype.md`, the app's demo mode, or the tests
-  (`cd code/backend && .venv/bin/python -m pytest`).
-- Keep the code reviewable. Use the existing seams (`schemas.py`,
-  `VisionProvider`, `StateStore`, `AssetStore`, `AreaService`), write comments
+  the root `readme.md` and the backend and edge READMEs, or the app's demo
+  mode.
+- Keep the code reviewable. Use the existing seams (`OccupancyClassifier`,
+  `OccupancyRepository`, `FingerprintStore`, the edge's `FrameSource`,
+  `PIIDetector` and `FrameUploader`, the API contracts in
+  `documentation/api/`, and `AreaService` in the app), write comments
   that explain why, read keys from the environment, and commit no secrets and
   no generated files such as `out/`, `.venv/`, or build folders.
 - Play fair. Respect the challenge's no-gos: never write camera frames to
