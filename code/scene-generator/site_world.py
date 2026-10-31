@@ -88,7 +88,7 @@ def main():
                     if (math.hypot(*p) < RADIUS and not any(inside(p, b["outline"]) for b in buildings)
                             and not any(inside(p, lot) for lot in parking)
                             and not any(near_line(p, r["line"], r["width"] / 2 + 1.5) for r in roads)
-                            and all(math.hypot(p[0] - s[0], p[1] - s[1]) > 14 for s in spots)
+                            and all(math.hypot(p[0] - s[0], p[1] - s[1]) > 20 for s in spots)
                             and all(math.hypot(p[0] - q[0], p[1] - q[1]) > 6 for q in trees)):
                         trees.append(p)
 

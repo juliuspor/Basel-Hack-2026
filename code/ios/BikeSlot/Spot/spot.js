@@ -1,7 +1,7 @@
 // One bike spot in a 3D model of the Endress+Hauser block. The view starts high above the
 // block and flies down, like Google Earth, until you stand right in front of the rack: a
-// blue glowing pad on every free slot and a parked bike on every taken one. The camera is
-// fixed once it lands; there is nothing to steer.
+// blue glowing pad on every free slot and a parked bike on every taken one. Once landed, a
+// sideways drag slides you along the rack, to look for landmarks; you cannot walk away.
 //
 // The world comes from site.js (OpenStreetMap buildings, streets, car parks and trees,
 // written by code/scene-generator/site_world.py). The app calls
@@ -22,7 +22,7 @@
   const RED = 0xd50c2f; // Brand.red: taken
   const MIST = 0xa4b3bc; // Brand.mist: not known yet
   const HORIZON = 0xe2ebf1; // fog colour, matches the bottom of the CSS sky
-  const FLIGHT_SECONDS = 5.5;
+  const FLIGHT_SECONDS = 3.6;
   const EYE_HEIGHT = 1.7;
 
   const STEEL = new THREE.MeshStandardMaterial({ color: 0x6f7980, metalness: 0.7, roughness: 0.35 });
@@ -41,11 +41,12 @@
   };
 
   let renderer, scene, camera, sun, clouds = [];
-  let flight = null; // {start, from: [P0..P3], target: [from, to], landed}
+  let flight = null; // {start, eye: [P0..P3], target: [from, to], right, limit, perPixel}
+  const pan = { offset: 0, goal: 0, speed: 0, lastX: null, lastTime: 0 }; // metres along the rack
   let slots = []; // {pad, beam, bike, occupied, shown}
   let known = true;
   const FOV = 72; // vertical, close to a phone camera held upright
-  const MAX_DISTANCE = 8.5; // a few steps back from the rack, never across the street
+  const MAX_DISTANCE = 18; // far enough back to see a whole rack on a narrow screen
   const clock = new THREE.Clock();
 
   // ---- World ---------------------------------------------------------------------------
@@ -204,7 +205,7 @@
     // on this screen. Looking a little below the rack keeps it above the app's card.
     const across = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * camera.aspect);
     const visible = Math.min(built.width, spec.view || Infinity);
-    let distance = Math.min((visible / 2 + 0.6) / Math.tan(across / 2), MAX_DISTANCE);
+    let distance = Math.min((visible / 2 + 0.8) / Math.tan(across / 2), MAX_DISTANCE);
     // Step closer if that spot would be inside a building.
     const eyeAt = (d) => holder.localToWorld(new THREE.Vector3(0, EYE_HEIGHT, d));
     while (distance > 3 && site.buildings.some((b) => inside([eyeAt(distance).x, -eyeAt(distance).z], b.outline))) {
@@ -221,6 +222,10 @@
       eye: [start, holder.position.clone().addScaledVector(front, 110).setY(170),
         holder.position.clone().addScaledVector(front, distance + 22).setY(16), eye],
       target: [new THREE.Vector3(0, 0, 0), target],
+      // Sliding runs along the rack, at most to its ends (or 3 m for short ones).
+      right: holder.localToWorld(new THREE.Vector3(1, 0, 0)).sub(holder.position).normalize(),
+      limit: Math.max(built.width / 2, 3),
+      perPixel: (2 * distance * Math.tan(across / 2)) / window.innerWidth,
     };
   }
 
@@ -264,8 +269,23 @@
       const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; // ease in and out
       camera.position.copy(bezier(flight.eye, e));
       const look = flight.target[0].clone().lerp(flight.target[1], Math.min(1, e * 1.25));
-      // Once landed, breathe very slightly, as if standing there.
-      if (k === 1) camera.position.y += Math.sin(t * 0.8) * 0.015;
+      if (k === 1) {
+        // Landed: follow the finger along the rack, coasting a little after release.
+        if (pan.lastX === null && pan.speed) {
+          pan.goal += pan.speed * dt;
+          pan.speed *= Math.pow(0.04, dt);
+          if (Math.abs(pan.speed) < 0.05) pan.speed = 0;
+        }
+        pan.goal = THREE.MathUtils.clamp(pan.goal, -flight.limit, flight.limit);
+        pan.offset += (pan.goal - pan.offset) * Math.min(dt * 12, 1);
+        camera.position.addScaledVector(flight.right, pan.offset);
+        look.addScaledVector(flight.right, pan.offset);
+        camera.position.y += Math.sin(t * 0.8) * 0.015; // breathe, as if standing there
+        if (!landed) {
+          landed = true;
+          document.body.classList.add("landed");
+        }
+      }
       camera.lookAt(look);
       arrived = THREE.MathUtils.clamp((k - 0.75) / 0.25, 0, 1);
     }
@@ -291,6 +311,26 @@
     }
     renderer.render(scene, camera);
   }
+
+  // A horizontal drag moves the world with the finger, so you step the other way.
+  let landed = false;
+  window.addEventListener("pointerdown", (e) => {
+    if (!landed) return;
+    pan.lastX = e.clientX;
+    pan.lastTime = performance.now();
+    pan.speed = 0;
+  });
+  window.addEventListener("pointermove", (e) => {
+    if (pan.lastX === null) return;
+    const now = performance.now(), step = -(e.clientX - pan.lastX) * flight.perPixel;
+    pan.goal += step;
+    pan.speed = step / Math.max((now - pan.lastTime) / 1000, 0.008);
+    pan.lastX = e.clientX;
+    pan.lastTime = now;
+  });
+  const release = () => { pan.lastX = null; };
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
 
   function inside([x, y], ring) {
     let hit = false;

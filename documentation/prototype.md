@@ -31,8 +31,9 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   three.js) starts above a model of the block, built from
   `assets/campus-map/source.osm` by `python3 code/scene-generator/site_world.py`,
   and flies down until you stand in front of the rack: a glowing blue pad on
-  every free slot and a bike on every taken one. Once landed the camera stays
-  put. Spots without a camera show grey pads. Open
+  every free slot and a bike on every taken one, far enough back to see the
+  whole rack. Once landed, a sideways drag slides you along the rack (not away
+  from it) to look for landmarks. Spots without a camera show grey pads. Open
   `spot.html?kind=curved_shelter&slots=10&lat=47.48683&lon=7.59919&heading=0`
   from that folder in a browser to preview it with made-up slots. The
   binoculars button opens Apple Look Around at the street next to the spot
