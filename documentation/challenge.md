@@ -5,11 +5,16 @@
 - **Published:** 9 September 2026
 - **Prize:** CHF 1,500
 - **Source:** [Official challenge brief](https://www.baselhack.ch/challenges/placeholder-endress-hauser)
-- **Last checked:** 30 October 2026
+- **Tags:** image recognition, embedded
+- **Last checked:** 31 October 2026
 
 This is a summary of the sponsor's brief; consult the source for updates.
+[`challenge-criteria.md`](challenge-criteria.md) rates our solution against it.
 
 ## Problem and audience
+
+> How might we help employees quickly find an available bicycle parking slot
+> at our company site?
 
 Help employees cycling to the company site locate vacant bicycle parking
 quickly. Crowded parking areas and uncertainty about vacancies make arrivals
@@ -18,16 +23,17 @@ learning, computer vision, and embedded development.
 
 ## Scope
 
-There are no mandatory features. Teams may reinterpret the idea and explore
-software, physical installations, or combinations of both.
+There are no mandatory features. Teams may reinterpret the idea, deviate from
+it, and explore software, physical installations, or combinations of both.
+The sponsor's only ask is to be creative.
 
 ## Suggested features (optional)
 
 - Live or estimated parking availability
-- Guidance to vacant spaces
+- Directions to vacant spaces
 - A straightforward mobile or web interface
 - Privacy-conscious design
-- A working prototype, potentially using sensors
+- A prototype, ideally with sensors
 
 ## Available resources
 
