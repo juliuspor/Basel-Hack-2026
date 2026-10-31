@@ -1,0 +1,277 @@
+[
+  {
+    "id": "curved-shelter-a",
+    "name": "Shelter A \u00b7 Main entrance",
+    "kind": "curved_shelter",
+    "center": [
+      47.48938,
+      7.59765
+    ],
+    "polygon": [
+      [
+        47.489371,
+        7.5976168
+      ],
+      [
+        47.489371,
+        7.5976832
+      ],
+      [
+        47.489389,
+        7.5976832
+      ],
+      [
+        47.489389,
+        7.5976168
+      ]
+    ],
+    "capacity": 10,
+    "occupied": 0,
+    "free": 10,
+    "updated_at": 1793439538.4293382,
+    "checked_at": 1793439544.429451,
+    "camera_time": "07:15",
+    "analyzer": "demo",
+    "model_url": "/models/curved-shelter-a.usdz",
+    "slots": [
+      {
+        "id": "r1_01",
+        "label": 1,
+        "occupied": false
+      },
+      {
+        "id": "r1_02",
+        "label": 2,
+        "occupied": false
+      },
+      {
+        "id": "r1_03",
+        "label": 3,
+        "occupied": false
+      },
+      {
+        "id": "r1_04",
+        "label": 4,
+        "occupied": false
+      },
+      {
+        "id": "r1_05",
+        "label": 5,
+        "occupied": false
+      },
+      {
+        "id": "r1_06",
+        "label": 6,
+        "occupied": false
+      },
+      {
+        "id": "r1_07",
+        "label": 7,
+        "occupied": false
+      },
+      {
+        "id": "r1_08",
+        "label": 8,
+        "occupied": false
+      },
+      {
+        "id": "r1_09",
+        "label": 9,
+        "occupied": false
+      },
+      {
+        "id": "r1_10",
+        "label": 10,
+        "occupied": false
+      }
+    ],
+    "person_present": false,
+    "frames_analyzed": 2,
+    "frames_skipped": 2
+  },
+  {
+    "id": "curved-shelter-b",
+    "name": "Shelter B \u00b7 Canteen",
+    "kind": "curved_shelter",
+    "center": [
+      47.48872,
+      7.59768
+    ],
+    "polygon": [
+      [
+        47.4887478,
+        7.5976667
+      ],
+      [
+        47.4886922,
+        7.5976667
+      ],
+      [
+        47.4886922,
+        7.5976933
+      ],
+      [
+        47.4887478,
+        7.5976933
+      ]
+    ],
+    "capacity": 13,
+    "occupied": 1,
+    "free": 12,
+    "updated_at": 1793439544.434945,
+    "checked_at": 1793439544.434942,
+    "camera_time": "07:15",
+    "analyzer": "demo",
+    "model_url": "/models/curved-shelter-b.usdz",
+    "slots": [
+      {
+        "id": "r1_01",
+        "label": 1,
+        "occupied": false
+      },
+      {
+        "id": "r1_02",
+        "label": 2,
+        "occupied": false
+      },
+      {
+        "id": "r1_03",
+        "label": 3,
+        "occupied": false
+      },
+      {
+        "id": "r1_04",
+        "label": 4,
+        "occupied": false
+      },
+      {
+        "id": "r1_05",
+        "label": 5,
+        "occupied": false
+      },
+      {
+        "id": "r1_06",
+        "label": 6,
+        "occupied": false
+      },
+      {
+        "id": "r1_07",
+        "label": 7,
+        "occupied": false
+      },
+      {
+        "id": "r1_08",
+        "label": 8,
+        "occupied": false
+      },
+      {
+        "id": "r1_09",
+        "label": 9,
+        "occupied": false
+      },
+      {
+        "id": "r1_10",
+        "label": 10,
+        "occupied": true
+      },
+      {
+        "id": "r1_11",
+        "label": 11,
+        "occupied": false
+      },
+      {
+        "id": "r1_12",
+        "label": 12,
+        "occupied": false
+      },
+      {
+        "id": "r1_13",
+        "label": 13,
+        "occupied": false
+      }
+    ],
+    "person_present": false,
+    "frames_analyzed": 3,
+    "frames_skipped": 1
+  },
+  {
+    "id": "curved-shelter-c",
+    "name": "Shelter C \u00b7 East car park",
+    "kind": "curved_shelter",
+    "center": [
+      47.48832,
+      7.59842
+    ],
+    "polygon": [
+      [
+        47.488311,
+        7.5983947
+      ],
+      [
+        47.488311,
+        7.5984453
+      ],
+      [
+        47.488329,
+        7.5984453
+      ],
+      [
+        47.488329,
+        7.5983947
+      ]
+    ],
+    "capacity": 8,
+    "occupied": 0,
+    "free": 8,
+    "updated_at": 1793439538.443299,
+    "checked_at": 1793439544.439198,
+    "camera_time": "07:15",
+    "analyzer": "demo",
+    "model_url": "/models/curved-shelter-c.usdz",
+    "slots": [
+      {
+        "id": "r1_01",
+        "label": 1,
+        "occupied": false
+      },
+      {
+        "id": "r1_02",
+        "label": 2,
+        "occupied": false
+      },
+      {
+        "id": "r1_03",
+        "label": 3,
+        "occupied": false
+      },
+      {
+        "id": "r1_04",
+        "label": 4,
+        "occupied": false
+      },
+      {
+        "id": "r1_05",
+        "label": 5,
+        "occupied": false
+      },
+      {
+        "id": "r1_06",
+        "label": 6,
+        "occupied": false
+      },
+      {
+        "id": "r1_07",
+        "label": 7,
+        "occupied": false
+      },
+      {
+        "id": "r1_08",
+        "label": 8,
+        "occupied": false
+      }
+    ],
+    "person_present": false,
+    "frames_analyzed": 2,
+    "frames_skipped": 2
+  }
+]

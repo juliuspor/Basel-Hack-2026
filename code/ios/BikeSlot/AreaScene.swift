@@ -12,7 +12,7 @@ final class AreaScene {
     private static let takenMaterial = UnlitMaterial(color: .systemRed)
 
     static func load(_ area: AreaSummary) async throws -> AreaScene {
-        let api = APIClient()
+        let api = Backend.current
         let model = try await Entity(contentsOf: try await api.modelFile(area.modelUrl))
         let bikeFile = try await Entity(contentsOf: try await api.modelFile("/models/bike.usdz"))
         guard let bike = bikeFile.findEntity(named: "bike") else { throw URLError(.cannotDecodeContentData) }

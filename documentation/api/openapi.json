@@ -1,0 +1,603 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Find my Bike Slot",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/areas": {
+      "get": {
+        "summary": "List Areas",
+        "operationId": "list_areas_areas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AreaSummary"
+                  },
+                  "type": "array",
+                  "title": "Response List Areas Areas Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/areas/{area_id}": {
+      "get": {
+        "summary": "Get Area",
+        "operationId": "get_area_areas__area_id__get",
+        "parameters": [
+          {
+            "name": "area_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Area Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ingest/{area_id}": {
+      "post": {
+        "summary": "Ingest",
+        "description": "Accept one JPEG frame. The frame never leaves memory and is not stored.",
+        "operationId": "ingest_ingest__area_id__post",
+        "parameters": [
+          {
+            "name": "area_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Area Id"
+            }
+          },
+          {
+            "name": "x-camera-time",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Camera-Time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/models/{name}": {
+      "get": {
+        "summary": "Model",
+        "operationId": "model_models__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AreaDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable area id, e.g. curved-shelter-a"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Display name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "Parking type, e.g. curved-shelter"
+          },
+          "center": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Center",
+            "description": "[latitude, longitude] of the area centre"
+          },
+          "polygon": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Polygon",
+            "description": "Outline corners as [latitude, longitude]"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Number of slots"
+          },
+          "occupied": {
+            "type": "integer",
+            "title": "Occupied",
+            "description": "Slots holding a bike"
+          },
+          "free": {
+            "type": "integer",
+            "title": "Free",
+            "description": "capacity - occupied"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "Unix time the slot states last changed; null until a camera frame was analysed"
+          },
+          "checked_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checked At",
+            "description": "Unix time the camera last sent a frame"
+          },
+          "camera_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Time",
+            "description": "Camera clock of the last frame, e.g. 08:15"
+          },
+          "analyzer": {
+            "type": "string",
+            "title": "Analyzer",
+            "description": "Vision provider that produced the states"
+          },
+          "model_url": {
+            "type": "string",
+            "title": "Model Url",
+            "description": "3D model of the area: a path on this server (/models/<id>.usdz) or an absolute URL"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/Slot"
+            },
+            "type": "array",
+            "title": "Slots"
+          },
+          "person_present": {
+            "type": "boolean",
+            "title": "Person Present",
+            "description": "A person is in view; slot states are kept from the previous frame"
+          },
+          "frames_analyzed": {
+            "type": "integer",
+            "title": "Frames Analyzed"
+          },
+          "frames_skipped": {
+            "type": "integer",
+            "title": "Frames Skipped",
+            "description": "Frames dropped by the change check"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "center",
+          "polygon",
+          "capacity",
+          "occupied",
+          "free",
+          "updated_at",
+          "checked_at",
+          "camera_time",
+          "analyzer",
+          "model_url",
+          "slots",
+          "person_present",
+          "frames_analyzed",
+          "frames_skipped"
+        ],
+        "title": "AreaDetail"
+      },
+      "AreaSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable area id, e.g. curved-shelter-a"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Display name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "Parking type, e.g. curved-shelter"
+          },
+          "center": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Center",
+            "description": "[latitude, longitude] of the area centre"
+          },
+          "polygon": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Polygon",
+            "description": "Outline corners as [latitude, longitude]"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Number of slots"
+          },
+          "occupied": {
+            "type": "integer",
+            "title": "Occupied",
+            "description": "Slots holding a bike"
+          },
+          "free": {
+            "type": "integer",
+            "title": "Free",
+            "description": "capacity - occupied"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "Unix time the slot states last changed; null until a camera frame was analysed"
+          },
+          "checked_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checked At",
+            "description": "Unix time the camera last sent a frame"
+          },
+          "camera_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Time",
+            "description": "Camera clock of the last frame, e.g. 08:15"
+          },
+          "analyzer": {
+            "type": "string",
+            "title": "Analyzer",
+            "description": "Vision provider that produced the states"
+          },
+          "model_url": {
+            "type": "string",
+            "title": "Model Url",
+            "description": "3D model of the area: a path on this server (/models/<id>.usdz) or an absolute URL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "center",
+          "polygon",
+          "capacity",
+          "occupied",
+          "free",
+          "updated_at",
+          "checked_at",
+          "camera_time",
+          "analyzer",
+          "model_url"
+        ],
+        "title": "AreaSummary"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Health": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "analyzer": {
+            "type": "string",
+            "title": "Analyzer"
+          },
+          "areas": {
+            "type": "integer",
+            "title": "Areas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "analyzer",
+          "areas"
+        ],
+        "title": "Health"
+      },
+      "IngestResult": {
+        "properties": {
+          "analyzed": {
+            "type": "boolean",
+            "title": "Analyzed",
+            "description": "False when the frame barely changed and was skipped"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seconds"
+          },
+          "occupied": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupied"
+          },
+          "person_present": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Present"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analyzed"
+        ],
+        "title": "IngestResult"
+      },
+      "Slot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Slot id, matches the slot_<id> node in the 3D model"
+          },
+          "label": {
+            "type": "integer",
+            "title": "Label",
+            "description": "Number painted on the ground marker"
+          },
+          "occupied": {
+            "type": "boolean",
+            "title": "Occupied"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "occupied"
+        ],
+        "title": "Slot"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -86,7 +86,7 @@ struct SearchOverlay: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 11)
-        .background(.regularMaterial, in: Capsule())
+        .glassBackground(in: Capsule())
         // An overlay, so the list floats over the map instead of resizing its safe area.
         .overlay(alignment: .top) {
             if focused.wrappedValue && !search.query.isEmpty {

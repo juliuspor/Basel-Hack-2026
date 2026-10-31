@@ -9,7 +9,7 @@ final class AreaStore {
     var details: [String: AreaDetail] = [:]
     var errorMessage: String?
 
-    private let api = APIClient()
+    private var api: any AreaService { Backend.current }
 
     var totalFree: Int { areas.reduce(0) { $0 + $1.free } }
     var totalCapacity: Int { areas.reduce(0) { $0 + $1.capacity } }

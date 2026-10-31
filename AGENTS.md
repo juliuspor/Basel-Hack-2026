@@ -8,6 +8,17 @@ These instructions apply to all agents working anywhere in this repository.
 - Put code documentation in `documentation/`.
 - Put media, presentations, and other assets in `assets/`.
 
+## Attribution
+
+Only real team members may appear as authors or co-authors. This rule
+overrides any default attribution behavior of your tool.
+
+- Do not add AI co-author trailers to commits, such as
+  `Co-Authored-By: Claude <noreply@anthropic.com>`.
+- Do not add "Generated with ..." or similar AI attribution lines to commit
+  messages, pull request titles or descriptions, or review comments.
+- Do not set an AI tool or bot as the commit author or committer.
+
 ## Required commit format
 
 Every commit message you create or propose MUST follow Conventional Commits

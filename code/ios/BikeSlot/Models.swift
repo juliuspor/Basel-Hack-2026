@@ -51,6 +51,14 @@ struct AreaDetail: Codable {
         case slots, personPresent, framesAnalyzed, framesSkipped
     }
 
+    init(summary: AreaSummary, slots: [Slot], personPresent: Bool, framesAnalyzed: Int, framesSkipped: Int) {
+        self.summary = summary
+        self.slots = slots
+        self.personPresent = personPresent
+        self.framesAnalyzed = framesAnalyzed
+        self.framesSkipped = framesSkipped
+    }
+
     init(from decoder: Decoder) throws {
         summary = try AreaSummary(from: decoder)
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -66,24 +74,20 @@ struct AreaDetail: Codable {
 }
 
 enum Availability {
-    case plenty, few, full, unknown
+    /// Any free spot counts as available; the number on the pin says how many.
+    case available, full, unknown
 
     init(free: Int, capacity: Int, known: Bool) {
         if !known || capacity == 0 {
             self = .unknown
-        } else if free == 0 {
-            self = .full
-        } else if Double(free) / Double(capacity) < 0.3 {
-            self = .few
         } else {
-            self = .plenty
+            self = free == 0 ? .full : .available
         }
     }
 
     var color: Color {
         switch self {
-        case .plenty: .green
-        case .few: .orange
+        case .available: .green
         case .full: .red
         case .unknown: .gray
         }
