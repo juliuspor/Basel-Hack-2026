@@ -11,9 +11,9 @@ functions or as one local server:
 - **MCP server** (`/mcp`): the same answers as tools for AI agents.
 
 On AWS, the Ingest function writes slot states to DynamoDB, and the
-Availability function reads them for the API and the MCP server. The design,
-with the reasons behind it, is in
-[`documentation/system-design.md`](../../documentation/system-design.md), and
+Availability function reads them for the API and the MCP server. The
+architecture is in
+[`documentation/architecture.md`](../../documentation/architecture.md), and
 the API contracts are in [`documentation/api/`](../../documentation/api).
 
 ## Layout
