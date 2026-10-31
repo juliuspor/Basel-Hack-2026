@@ -1,0 +1,3 @@
+# Kept in the import root, so ruff sorts the feature packages as first-party.
+line-length = 120
+target-version = "py313"

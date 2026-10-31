@@ -1,0 +1,479 @@
+{
+  "stations": [
+    {
+      "id": "cmr-north-01",
+      "name": "Christoph-Merian-Ring North",
+      "location": {
+        "lat": 47.4880825,
+        "lon": 7.6001723
+      },
+      "slots": [
+        {
+          "number": 1,
+          "location": {
+            "lat": 47.4878522,
+            "lon": 7.6001752
+          }
+        },
+        {
+          "number": 2,
+          "location": {
+            "lat": 47.4878612,
+            "lon": 7.6001751
+          }
+        },
+        {
+          "number": 3,
+          "location": {
+            "lat": 47.4878702,
+            "lon": 7.600175
+          }
+        },
+        {
+          "number": 4,
+          "location": {
+            "lat": 47.4878792,
+            "lon": 7.6001749
+          }
+        },
+        {
+          "number": 5,
+          "location": {
+            "lat": 47.4878882,
+            "lon": 7.6001748
+          }
+        },
+        {
+          "number": 6,
+          "location": {
+            "lat": 47.4879053,
+            "lon": 7.6001746
+          }
+        },
+        {
+          "number": 7,
+          "location": {
+            "lat": 47.4879143,
+            "lon": 7.6001744
+          }
+        },
+        {
+          "number": 8,
+          "location": {
+            "lat": 47.4879233,
+            "lon": 7.6001743
+          }
+        },
+        {
+          "number": 9,
+          "location": {
+            "lat": 47.4879323,
+            "lon": 7.6001742
+          }
+        },
+        {
+          "number": 10,
+          "location": {
+            "lat": 47.4879413,
+            "lon": 7.6001741
+          }
+        },
+        {
+          "number": 11,
+          "location": {
+            "lat": 47.4879583,
+            "lon": 7.6001739
+          }
+        },
+        {
+          "number": 12,
+          "location": {
+            "lat": 47.4879673,
+            "lon": 7.6001738
+          }
+        },
+        {
+          "number": 13,
+          "location": {
+            "lat": 47.4879763,
+            "lon": 7.6001736
+          }
+        },
+        {
+          "number": 14,
+          "location": {
+            "lat": 47.4879853,
+            "lon": 7.6001735
+          }
+        },
+        {
+          "number": 15,
+          "location": {
+            "lat": 47.4879943,
+            "lon": 7.6001734
+          }
+        },
+        {
+          "number": 16,
+          "location": {
+            "lat": 47.4880114,
+            "lon": 7.6001732
+          }
+        },
+        {
+          "number": 17,
+          "location": {
+            "lat": 47.4880204,
+            "lon": 7.6001731
+          }
+        },
+        {
+          "number": 18,
+          "location": {
+            "lat": 47.4880294,
+            "lon": 7.600173
+          }
+        },
+        {
+          "number": 19,
+          "location": {
+            "lat": 47.4880384,
+            "lon": 7.6001728
+          }
+        },
+        {
+          "number": 20,
+          "location": {
+            "lat": 47.4880474,
+            "lon": 7.6001727
+          }
+        },
+        {
+          "number": 21,
+          "location": {
+            "lat": 47.4880645,
+            "lon": 7.6001725
+          }
+        },
+        {
+          "number": 22,
+          "location": {
+            "lat": 47.4880735,
+            "lon": 7.6001724
+          }
+        },
+        {
+          "number": 23,
+          "location": {
+            "lat": 47.4880825,
+            "lon": 7.6001723
+          }
+        },
+        {
+          "number": 24,
+          "location": {
+            "lat": 47.4880915,
+            "lon": 7.6001722
+          }
+        },
+        {
+          "number": 25,
+          "location": {
+            "lat": 47.4881005,
+            "lon": 7.600172
+          }
+        },
+        {
+          "number": 26,
+          "location": {
+            "lat": 47.4881176,
+            "lon": 7.6001718
+          }
+        },
+        {
+          "number": 27,
+          "location": {
+            "lat": 47.4881266,
+            "lon": 7.6001717
+          }
+        },
+        {
+          "number": 28,
+          "location": {
+            "lat": 47.4881356,
+            "lon": 7.6001716
+          }
+        },
+        {
+          "number": 29,
+          "location": {
+            "lat": 47.4881446,
+            "lon": 7.6001715
+          }
+        },
+        {
+          "number": 30,
+          "location": {
+            "lat": 47.4881536,
+            "lon": 7.6001714
+          }
+        },
+        {
+          "number": 31,
+          "location": {
+            "lat": 47.4881706,
+            "lon": 7.6001711
+          }
+        },
+        {
+          "number": 32,
+          "location": {
+            "lat": 47.4881796,
+            "lon": 7.600171
+          }
+        },
+        {
+          "number": 33,
+          "location": {
+            "lat": 47.4881886,
+            "lon": 7.6001709
+          }
+        },
+        {
+          "number": 34,
+          "location": {
+            "lat": 47.4881976,
+            "lon": 7.6001708
+          }
+        },
+        {
+          "number": 35,
+          "location": {
+            "lat": 47.4882066,
+            "lon": 7.6001707
+          }
+        },
+        {
+          "number": 36,
+          "location": {
+            "lat": 47.4882237,
+            "lon": 7.6001705
+          }
+        },
+        {
+          "number": 37,
+          "location": {
+            "lat": 47.4882327,
+            "lon": 7.6001703
+          }
+        },
+        {
+          "number": 38,
+          "location": {
+            "lat": 47.4882417,
+            "lon": 7.6001702
+          }
+        },
+        {
+          "number": 39,
+          "location": {
+            "lat": 47.4882507,
+            "lon": 7.6001701
+          }
+        },
+        {
+          "number": 40,
+          "location": {
+            "lat": 47.4882597,
+            "lon": 7.60017
+          }
+        },
+        {
+          "number": 41,
+          "location": {
+            "lat": 47.4882768,
+            "lon": 7.6001698
+          }
+        },
+        {
+          "number": 42,
+          "location": {
+            "lat": 47.4882858,
+            "lon": 7.6001697
+          }
+        },
+        {
+          "number": 43,
+          "location": {
+            "lat": 47.4882948,
+            "lon": 7.6001695
+          }
+        },
+        {
+          "number": 44,
+          "location": {
+            "lat": 47.4883038,
+            "lon": 7.6001694
+          }
+        },
+        {
+          "number": 45,
+          "location": {
+            "lat": 47.4883128,
+            "lon": 7.6001693
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmr-south-02",
+      "name": "Christoph-Merian-Ring South",
+      "location": {
+        "lat": 47.4869208,
+        "lon": 7.6000761
+      },
+      "slots": [
+        {
+          "number": 1,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999203
+          }
+        },
+        {
+          "number": 2,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.599927
+          }
+        },
+        {
+          "number": 3,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999336
+          }
+        },
+        {
+          "number": 4,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999403
+          }
+        },
+        {
+          "number": 5,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999469
+          }
+        },
+        {
+          "number": 6,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999536
+          }
+        },
+        {
+          "number": 7,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999602
+          }
+        },
+        {
+          "number": 8,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999669
+          }
+        },
+        {
+          "number": 9,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999735
+          }
+        },
+        {
+          "number": 10,
+          "location": {
+            "lat": 47.4868599,
+            "lon": 7.5999802
+          }
+        },
+        {
+          "number": 11,
+          "location": {
+            "lat": 47.4869614,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 12,
+          "location": {
+            "lat": 47.4869659,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 13,
+          "location": {
+            "lat": 47.4869704,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 14,
+          "location": {
+            "lat": 47.4869749,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 15,
+          "location": {
+            "lat": 47.4869794,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 16,
+          "location": {
+            "lat": 47.4869839,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 17,
+          "location": {
+            "lat": 47.4869884,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 18,
+          "location": {
+            "lat": 47.4869929,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 19,
+          "location": {
+            "lat": 47.4869974,
+            "lon": 7.6002019
+          }
+        },
+        {
+          "number": 20,
+          "location": {
+            "lat": 47.4870019,
+            "lon": 7.6002019
+          }
+        }
+      ]
+    }
+  ]
+}
