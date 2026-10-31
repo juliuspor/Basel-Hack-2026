@@ -52,5 +52,5 @@ None. The brief invites teams to deviate from the idea and be creative.
 ## Before judging
 
 1. Connect at least one real ESP32-CAM to `POST /ingest/<area>`, cropping or blurring on the device.
-2. Replace the placeholder shelter coordinates in `code/backend/data/areas.json` with the mapped ones in `assets/campus-map/slots.json`.
+2. Confirm shelter C's position on site (A and B already use the mapped positions in `assets/campus-map/slots.json`) and add the 45-slot north shelter.
 3. Point riders to a specific free slot number once they reach the shelter.

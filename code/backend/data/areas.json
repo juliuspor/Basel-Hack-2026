@@ -1,20 +1,20 @@
 [
   {
     "id": "curved-shelter-a",
-    "name": "Shelter A · Main entrance",
-    "center": [47.48938, 7.59765],
+    "name": "Shelter A · South side",
+    "center": [47.4868599, 7.5999503],
     "heading_deg": 0
   },
   {
     "id": "curved-shelter-b",
-    "name": "Shelter B · Canteen",
-    "center": [47.48872, 7.59768],
+    "name": "Shelter B · East side",
+    "center": [47.4869817, 7.6002019],
     "heading_deg": 90
   },
   {
     "id": "curved-shelter-c",
-    "name": "Shelter C · East car park",
-    "center": [47.48832, 7.59842],
+    "name": "Shelter C · Corner",
+    "center": [47.4868599, 7.6001377],
     "heading_deg": 0
   }
 ]

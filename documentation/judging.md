@@ -278,7 +278,7 @@ analyzer (no API key), and a physical ESP32-CAM (none connected yet).
 | Gap | Where | Next step |
 |---|---|---|
 | Cameras are simulated | [`simulate.py`](../code/backend/simulate.py) | Connect one ESP32-CAM to `POST /ingest/<area>` and calibrate its view |
-| Shelter coordinates are placeholders | [`areas.json`](../code/backend/data/areas.json) | Use the 65 slot positions mapped in [`slots.json`](../assets/campus-map/slots.json) ([how they were mapped](campus-data.md)) |
+| Shelter C's position is approximate, and the north shelter has no 3D model | [`areas.json`](../code/backend/data/areas.json) | Confirm C on site; model the 45-slot north shelter from [`slots.json`](../assets/campus-map/slots.json) ([how it was mapped](campus-data.md)) |
 | State is lost when the backend restarts | [`MemoryStateStore`](../code/backend/storage.py#L40-L54) | DynamoDB behind `StateStore` (planned) |
 | The app allows plain HTTP, to reach a laptop backend | [`NSAllowsArbitraryLoads`](../code/ios/project.yml#L27-L29) | HTTPS once the API is hosted |
 | Tests run locally only, and the app has none | [`tests/`](../code/backend/tests) | Run pytest on every push |

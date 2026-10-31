@@ -27,8 +27,10 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   the card down shrinks it, pulling again dismisses it. The 3D view shows bikes on
   taken slots and blue/red numbered markers; its binoculars button opens Apple
   Look Around at the street next to the shelter where Apple has imagery (it
-  needs internet, so it is hidden offline). Shelter coordinates in
-  `code/backend/data/areas.json` are placeholders.
+  needs internet, so it is hidden offline). Shelters A and B in
+  `code/backend/data/areas.json` stand on the two curved shelters measured in
+  `assets/campus-map/slots.json`; C, on the same building, is approximate, and
+  the long north shelter (45 slots) has no 3D model yet.
 - **Search.** The search bar on the map finds shelters by name and places or
   addresses through Apple Maps (biased to the area around the site). Picking a
   place drops a marker there, frames it with the nearby shelters, and opens the
