@@ -86,7 +86,7 @@ enum Availability {
 
     var color: Color {
         switch self {
-        case .available: Brand.blue
+        case .available: Brand.free
         case .full: Brand.red
         case .unknown: Brand.mist
         }

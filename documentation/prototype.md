@@ -30,8 +30,11 @@ Blender (code/scene-generator)                    Backend (code/backend)        
   shrinks it, pulling again dismisses it. The 3D view (`code/ios/BikeSlot/Spot/`,
   three.js) starts above a model of the block, built from
   `assets/campus-map/source.osm` by `python3 code/scene-generator/site_world.py`,
-  and flies down until you stand in front of the rack: a glowing blue pad on
-  every free slot and a bike on every taken one, far enough back to see the
+  with Julius's Kenney trees, bushes, street lamps and parked cars from the
+  three.js prototype in `assets/` (baked into `Spot/models.js` by
+  `code/scene-generator/kenney_models.py`), and flies down until you stand in
+  front of the rack: a glowing green pad on every free slot and a bike on a red
+  pad on every taken one (green and red also on the map), far enough back to see the
   whole rack. Once landed you look around it like in Google Maps 3D: drag to
   turn and tilt, pinch to zoom, twist to rotate, double-tap for the front view;
   the rack stays in focus, and the swipe-back gesture is off on this screen so

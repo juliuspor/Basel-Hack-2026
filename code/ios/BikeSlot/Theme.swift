@@ -2,9 +2,12 @@ import SwiftUI
 
 /// Endress+Hauser colors, taken from endress.com.
 enum Brand {
-    /// Logo blue: the app's accent, main actions and free spots. Free (blue) and
-    /// full (red) also stay distinguishable with red-green color blindness.
+    /// Logo blue: the app's accent and main actions.
     static let blue = Color(hex: 0x00AEEF)
+    /// Free spots, on the map, in the card and in the 3D view (Spot/spot.js uses the same
+    /// value). Free and taken never rely on colour alone: the pins and card carry the count,
+    /// and in 3D a taken slot holds a bike while a free one glows.
+    static let free = Color(hex: 0x19C25A)
     /// Dark slate used for text and icons on endress.com.
     static let slate = Color(hex: 0x36444C)
     /// Light slate for inactive states.

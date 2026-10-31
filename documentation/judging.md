@@ -40,11 +40,11 @@ a count ([`Slot`](../code/backend/schemas.py#L31-L34),
 [`AreaDetail`](../code/backend/schemas.py#L37-L42)). Tapping a spot flies,
 like Google Earth, from above a three.js model of the Endress+Hauser block
 (its buildings, streets and trees from OpenStreetMap) down to where you would
-stand in front of the rack ([`show`](../code/ios/BikeSlot/Spot/spot.js#L178-L225)).
+stand in front of the rack ([`show`](../code/ios/BikeSlot/Spot/spot.js#L187-L234)).
 The rack is built for the spot's kind
-([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L424-L453) and three
-more), with a glowing blue pad on every free slot and a bike on every taken one
-([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L238-L255)), shown in the app by
+([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L461-L490) and three
+more), with a glowing green pad on every free slot and a bike on a red pad on every taken one
+([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L247-L264)), shown in the app by
 [`SpotView`](../code/ios/BikeSlot/SpotView.swift#L9-L74). The card below keeps
 only the free count ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L53-L86)).
 
@@ -220,9 +220,11 @@ All but the second print nothing.
   canvas-confetti with its [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti).
   The app's 3D spot view bundles three.js r149 with its
   [MIT licence](../code/ios/BikeSlot/Spot/LICENSE-three.txt); its 3D world is
-  built from the OpenStreetMap extract and credited on screen.
-  The archived three.js prototype of the Ring street, not part of the app,
-  uses Kenney CC0 models shipped with their
+  built from the OpenStreetMap extract and credited on screen, and its trees,
+  bushes, street lamps and cars are the Kenney CC0 models of the archived
+  three.js prototype of the Ring street, baked into `Spot/models.js` by
+  `code/scene-generator/kenney_models.py`. That prototype, not part of the app,
+  ships the Kenney models with their
   [licence](../assets/threejs-prototype-3d-world-of-endress-hauser/kenney/car-kit/License.txt)
   and loads three.js r170 (MIT) from jsDelivr
   ([README](../assets/threejs-prototype-3d-world-of-endress-hauser/README.md#sources)).

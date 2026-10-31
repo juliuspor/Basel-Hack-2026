@@ -1,7 +1,7 @@
 """The Endress+Hauser block as a small 3D world for the app's spot view.
 
 Reads the OpenStreetMap extract and writes the buildings, streets, car parks and
-street trees within RADIUS metres of the block as local metres (x east, y north
+street trees, bushes, lamps and parked cars within RADIUS metres of the block as local metres (x east, y north
 of ORIGIN) into a script the spot view loads. The view extrudes them in three.js,
 flies down from above the block and lands in front of the chosen bike spot.
 No Blender needed.
@@ -12,6 +12,7 @@ Run: python3 code/scene-generator/site_world.py
 import json
 import math
 import xml.etree.ElementTree as ET
+from random import Random
 from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
@@ -25,6 +26,8 @@ ENDRESS = "238805703"  # the Endress+Hauser block, silver facades and solar roof
 FLOOR = 3.6
 ROADS = {"secondary": 7.5, "residential": 6.5, "service": 4.0, "footway": 2.0, "path": 2.0}
 TREE_SPACING, TREE_OFFSET = 13.0, 3.5  # metres along and beside the bigger streets
+LAMP_SPACING = 34.0
+MAX_CARS = 160
 
 
 def local(lat, lon):
@@ -72,32 +75,65 @@ def main():
             parking.append(ring)
 
     spots = [local(*area["center"]) for area in json.loads(AREAS.read_text())]
-    trees = []
+    random = Random(7)  # fixed seed: the same world on every build
+
+    def free(p, clearance, others=(), gap=0):
+        """Open ground: not in a building, car park or street, and clear of the racks."""
+        return (math.hypot(*p) < RADIUS and not any(inside(p, b["outline"]) for b in buildings)
+                and not any(inside(p, lot) for lot in parking)
+                and not any(near_line(p, r["line"], r["width"] / 2 + 1.5) for r in roads)
+                and all(math.hypot(p[0] - s[0], p[1] - s[1]) > clearance for s in spots)
+                and all(math.hypot(p[0] - q[0], p[1] - q[1]) > gap for q in others))
+
+    # Street trees in four kinds with bushes between them, and lamps, along the bigger streets.
+    trees, bushes, lamps = [], [], []
     for road in roads:
         if road["width"] < 6:
             continue
         for (x1, y1), (x2, y2) in zip(road["line"], road["line"][1:]):
             length = math.hypot(x2 - x1, y2 - y1)
+            nx, ny = -(y2 - y1) / length, (x2 - x1) / length
+            at = lambda d, side, offset: (round(x1 + d / length * (x2 - x1) + side * nx * offset, 1),
+                                          round(y1 + d / length * (y2 - y1) + side * ny * offset, 1))
             for step in range(int(length // TREE_SPACING)):
-                t = (step + 0.5) * TREE_SPACING / length
-                nx, ny = -(y2 - y1) / length, (x2 - x1) / length
                 for side in (1, -1):
                     offset = road["width"] / 2 + TREE_OFFSET
-                    p = (round(x1 + t * (x2 - x1) + side * nx * offset, 1),
-                         round(y1 + t * (y2 - y1) + side * ny * offset, 1))
-                    if (math.hypot(*p) < RADIUS and not any(inside(p, b["outline"]) for b in buildings)
-                            and not any(inside(p, lot) for lot in parking)
-                            and not any(near_line(p, r["line"], r["width"] / 2 + 1.5) for r in roads)
-                            and all(math.hypot(p[0] - s[0], p[1] - s[1]) > 20 for s in spots)
-                            and all(math.hypot(p[0] - q[0], p[1] - q[1]) > 6 for q in trees)):
-                        trees.append(p)
+                    p = at((step + 0.5) * TREE_SPACING, side, offset)
+                    if free(p, 20, [q[:2] for q in trees], 6):
+                        trees.append([*p, random.randrange(4), round(random.uniform(3.4, 4.6), 2)])
+                    b = at((step + 1) * TREE_SPACING, side, offset)
+                    if random.random() < 0.6 and free(b, 20, [q[:2] for q in trees + bushes], 3):
+                        bushes.append([*b, round(random.uniform(3.6, 4.8), 2)])
+            for step in range(int(length // LAMP_SPACING)):
+                side = 1 if step % 2 else -1
+                p = at((step + 0.5) * LAMP_SPACING, side, road["width"] / 2 + 1.7)
+                if free(p, 12, [q[:2] for q in lamps], 20):
+                    lamps.append([*p, round(-side * nx, 3), round(-side * ny, 3)])  # the arm reaches over the street
 
-    site = {"origin": ORIGIN, "buildings": buildings, "roads": roads, "parking": parking, "trees": trees}
+    # Parked cars in rows across each car park's longest side, about two in three bays taken.
+    cars = []
+    for lot in parking:
+        edges = list(zip(lot, lot[1:] + lot[:1]))
+        (ax, ay), (bx, by) = max(edges, key=lambda e: math.hypot(e[1][0] - e[0][0], e[1][1] - e[0][1]))
+        length = math.hypot(bx - ax, by - ay)
+        dx, dy = (bx - ax) / length, (by - ay) / length
+        span = [(x - ax) * -dy + (y - ay) * dx for x, y in lot]
+        for depth in range(int(min(span) // 5.6) - 1, int(max(span) // 5.6) + 2):
+            for along in range(-60, 60):
+                p = (round(ax + along * 2.6 * dx - (depth * 5.6 + 2.8) * dy, 1),
+                     round(ay + along * 2.6 * dy + (depth * 5.6 + 2.8) * dx, 1))
+                if (inside(p, lot) and random.random() < 0.65
+                        and all(math.hypot(p[0] - s[0], p[1] - s[1]) > 25 for s in spots)):
+                    cars.append([*p, round(-dy, 3), round(dx, 3), random.randrange(4)])
+    cars = random.sample(cars, min(len(cars), MAX_CARS))  # enough to read as car parks, light on a phone
+
+    site = {"origin": ORIGIN, "buildings": buildings, "roads": roads, "parking": parking, "trees": trees,
+            "bushes": bushes, "lamps": lamps, "cars": cars}
     OUT.write_text("// Generated by code/scene-generator/site_world.py from OpenStreetMap data\n"
                    "// (© OpenStreetMap contributors, ODbL). Do not edit by hand.\n"
                    f"window.SITE = {json.dumps(site, separators=(',', ':'))};\n")
     print(f"wrote {len(buildings)} buildings, {len(roads)} streets and paths, {len(parking)} car parks, "
-          f"{len(trees)} trees to {OUT.relative_to(ROOT)}")
+          f"{len(trees)} trees, {len(bushes)} bushes, {len(lamps)} lamps, {len(cars)} cars to {OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

@@ -4,8 +4,10 @@
 // can look around the rack like in Google Maps 3D: drag to orbit and tilt, pinch to zoom,
 // twist to rotate, double-tap to return to the front view. The rack stays the focus.
 //
-// The world comes from site.js (OpenStreetMap buildings, streets, car parks and trees,
-// written by code/scene-generator/site_world.py). The app calls
+// The world comes from site.js (OpenStreetMap buildings, streets and car parks, with street
+// trees, bushes, lamps and parked cars; written by code/scene-generator/site_world.py) and
+// models.js (Kenney CC0 models from the three.js prototype in assets/, written by
+// code/scene-generator/kenney_models.py). The app calls
 // BikeSpot.show({id, kind, center, polygon, known, slots}) once and
 // BikeSpot.update(slots, known) on every change, with slots as [{id, label, occupied}] and
 // center/polygon as [lat, lon] from the API. While `known` is false (no camera has reported
@@ -19,7 +21,7 @@
   // every material out. Must run before the first material is made.
   THREE.ColorManagement.legacyMode = false;
 
-  const BLUE = 0x00aeef; // Brand.blue in the app: free
+  const GREEN = 0x19c25a; // Brand.free in the app: free
   const RED = 0xd50c2f; // Brand.red: taken
   const MIST = 0xa4b3bc; // Brand.mist: not known yet
   const HORIZON = 0xe2ebf1; // fog colour, matches the bottom of the CSS sky
@@ -115,7 +117,7 @@
     ground.receiveShadow = true;
     scene.add(ground);
 
-    const asphalt = new THREE.MeshStandardMaterial({ color: 0x585e64, roughness: 0.95 });
+    const asphalt = new THREE.MeshStandardMaterial({ color: 0x6b7076, map: grainTexture(), roughness: 0.95 });
     const lot = new THREE.MeshStandardMaterial({ color: 0x8d9296, roughness: 0.95 });
     const path = new THREE.MeshStandardMaterial({ color: 0xc9c4b8, roughness: 1 });
     const paint = new THREE.MeshBasicMaterial({ color: 0xf4f4f0 });
@@ -154,22 +156,29 @@
       scene.add(mesh);
     }
 
-    // Trees as two instanced meshes, so 180 of them stay cheap.
-    const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.16, 0.24, 3, 6),
-      new THREE.MeshStandardMaterial({ color: 0x6b5442, roughness: 1 }), site.trees.length);
-    const crowns = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(2.3, 1),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true }), site.trees.length);
-    const m = new THREE.Matrix4(), colour = new THREE.Color();
-    site.trees.forEach((p, i) => {
-      const s = 0.8 + ((i * 37) % 10) / 20;
-      m.makeScale(s, s, s).setPosition(p[0], 1.5 * s, -p[1]);
-      trunks.setMatrixAt(i, m);
-      m.makeScale(s, s * 1.15, s).setPosition(p[0], 4.3 * s, -p[1]);
-      crowns.setMatrixAt(i, m);
-      crowns.setColorAt(i, colour.setHSL(0.27 + ((i * 13) % 7) / 100, 0.42, 0.36 + ((i * 7) % 5) / 60));
-    });
-    trunks.castShadow = crowns.castShadow = true;
-    scene.add(trunks, crowns);
+    // Kenney trees, bushes, lamps and cars, one instanced mesh per model so hundreds stay cheap.
+    const turn = (i) => ((i * 2.399) % (2 * Math.PI)); // golden-angle spread of headings
+    const facing = (dx, dy) => Math.atan2(dx, -dy); // yaw that turns a model's +z to (dx, dy)
+    const trees = ["tree_default_fall", "tree_detailed_fall", "tree_oak_fall", "tree_fat_fall"];
+    trees.forEach((name, kind) => instances(name, site.trees.filter((p) => p[2] === kind),
+      (p, i) => [p[0], p[1], turn(i), p[3]]));
+    ["plant_bushLarge", "plant_bushDetailed"].forEach((name, kind) => instances(name,
+      site.bushes.filter((_, i) => i % 2 === kind), (p, i) => [p[0], p[1], turn(i), p[2]]));
+    instances("light-curved", site.lamps, (p) => [p[0], p[1], facing(-p[2], -p[3]), 9]);
+    ["sedan", "suv", "hatchback-sports", "van"].forEach((name, kind) => instances(name,
+      site.cars.filter((p) => p[4] === kind), (p, i) => [p[0], p[1], facing(p[2], p[3]) + ((i % 3) - 1) * 0.04, 1.75]));
+
+    // A patch of lawn under every tree and bush.
+    const lawn = merge([...site.trees, ...site.bushes].map((p) => {
+      const disc = new THREE.CircleGeometry(p.length > 3 ? 2.4 : 1.3, 12);
+      disc.rotateX(-Math.PI / 2);
+      disc.translate(p[0], 0, -p[1]);
+      return disc;
+    }));
+    const grass = new THREE.Mesh(lawn, new THREE.MeshStandardMaterial({ color: 0x6f9a4e, roughness: 1 }));
+    grass.position.y = 0.035;
+    grass.receiveShadow = true;
+    scene.add(grass);
 
   }
 
@@ -237,13 +246,13 @@
   // A slot: pad on the ground, a light beam while it is free, a bike while it is taken.
   function makeSlot(place, pitch, index) {
     const pad = new THREE.Mesh(roundedRect(pitch * 0.82, 1.5, 0.12),
-      new THREE.MeshBasicMaterial({ color: BLUE, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false }));
+      new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.75, depthWrite: false, toneMapped: false }));
     pad.rotation.x = -Math.PI / 2;
     pad.position.set(0, 0.075, 0.35);
     place.add(pad);
 
     const beam = new THREE.Mesh(new THREE.PlaneGeometry(pitch * 0.7, 1.5),
-      new THREE.MeshBasicMaterial({ map: beamTexture(), color: BLUE, transparent: true, opacity: 0.6,
+      new THREE.MeshBasicMaterial({ map: beamTexture(), color: GREEN, transparent: true, opacity: 0.6,
         depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
     beam.position.set(0, 0.75, 0.35);
     place.add(beam);
@@ -278,7 +287,7 @@
       s.bike.visible = known && s.shown > 0.02;
       s.bike.scale.setScalar(0.6 + 0.4 * s.shown);
       s.bike.position.y = (1 - s.shown) * 0.3;
-      s.pad.material.color.setHex(!known ? MIST : s.shown > 0.5 ? RED : BLUE);
+      s.pad.material.color.setHex(!known ? MIST : s.shown > 0.5 ? RED : GREEN);
       const pulse = 0.5 + 0.5 * Math.sin(t * 2.2 + s.phase);
       s.pad.material.opacity = (s.shown > 0.5 ? 0.85 : 0.6 + 0.3 * pulse) * (0.35 + 0.65 * arrived);
       s.beam.visible = known && free > 0.02 && arrived > 0;
@@ -394,6 +403,34 @@
     const u = 1 - t;
     return a.clone().multiplyScalar(u * u * u).addScaledVector(b, 3 * u * u * t)
       .addScaledVector(c, 3 * u * t * t).addScaledVector(d, t * t * t);
+  }
+
+  // One instanced mesh of a Kenney model; `place(item, i)` gives [x, y, yaw, scale].
+  const geometries = {};
+  const KENNEY = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, flatShading: true });
+  function instances(name, items, place) {
+    if (!items.length) return;
+    const mesh = new THREE.InstancedMesh(kenney(name), KENNEY, items.length);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0);
+    items.forEach((item, i) => {
+      const [x, y, yaw, scale] = place(item, i);
+      m.compose(new THREE.Vector3(x, 0, -y), q.setFromAxisAngle(up, yaw), new THREE.Vector3(scale, scale, scale));
+      mesh.setMatrixAt(i, m);
+    });
+    mesh.castShadow = mesh.receiveShadow = true;
+    scene.add(mesh);
+  }
+
+  function kenney(name) {
+    if (geometries[name]) return geometries[name];
+    const model = window.MODELS[name];
+    const bytes = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)).buffer;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(bytes(model.p)), 3));
+    geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(bytes(model.n)), 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(new Uint8Array(bytes(model.c)), 3, true));
+    geometry.setIndex(new THREE.BufferAttribute(model.wide ? new Uint32Array(bytes(model.i)) : new Uint16Array(bytes(model.i)), 1));
+    return (geometries[name] = geometry);
   }
 
   // ---- Kinds: each builds into `parent` with the open front towards +z -------------------
@@ -643,15 +680,21 @@
     return merge(parts);
   }
 
-  // Joins plain triangle geometries into one, so a street is a single draw call.
+  // Joins plain triangle geometries into one, so a street is a single draw call. UVs run in
+  // metres across the ground, for the asphalt grain.
   function merge(parts) {
-    const positions = [];
+    const positions = [], uvs = [];
     for (const part of parts) {
       const g = part.index ? part.toNonIndexed() : part;
-      positions.push(...g.attributes.position.array);
+      const p = g.attributes.position.array;
+      for (let i = 0; i < p.length; i += 3) {
+        positions.push(p[i], p[i + 1], p[i + 2]);
+        uvs.push(p[i] / 6, p[i + 2] / 6);
+      }
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     geometry.computeVertexNormals();
     return geometry;
   }
@@ -705,6 +748,22 @@
       g.fillStyle = "rgba(255,255,255,0.08)";
       for (let y = 8; y < s; y += 64) g.fillRect(0, y, s, 6);
     }, [1 / 8, 1 / 8]);
+  }
+
+  // Asphalt grain: speckles and a few darker patches, no gradients (WebKit dithers those).
+  function grainTexture() {
+    return canvasTexture(256, (g, s) => {
+      g.fillStyle = "#ffffff"; g.fillRect(0, 0, s, s);
+      let seed = 3;
+      const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      for (let i = 0; i < 2600; i++) {
+        const v = 200 + Math.floor(rand() * 55);
+        g.fillStyle = `rgb(${v},${v},${v})`;
+        g.fillRect(rand() * s, rand() * s, 1 + rand() * 2, 1 + rand() * 2);
+      }
+      g.fillStyle = "rgba(0,0,0,0.05)";
+      for (let i = 0; i < 6; i++) g.fillRect(rand() * s, rand() * s, 30 + rand() * 60, 20 + rand() * 40);
+    });
   }
 
   function tileTexture(width, depth) {
