@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Easy+Hitch target architecture",
+    "title": "Easy+Hitch architecture",
     "locale": "en",
     "output": "documentation/diagrams/easy-hitch-architecture.html",
     "quality_profile": "showcase"
@@ -11,7 +11,7 @@
     {
       "id": "camera",
       "type": "security",
-      "label": "XIAO ESP32S3 Sense",
+      "label": "Camera",
       "sublabel": "YOLO11n and face blur",
       "pos": [
         40,
@@ -68,7 +68,7 @@
       "id": "api",
       "type": "backend",
       "label": "Availability API",
-      "sublabel": "/areas and /areas/{id}",
+      "sublabel": "/v1/stations and /mcp",
       "pos": [
         1030,
         200
@@ -91,12 +91,26 @@
         180,
         64
       ]
+    },
+    {
+      "id": "agents",
+      "type": "external",
+      "label": "AI agents",
+      "sublabel": "MCP clients",
+      "pos": [
+        1030,
+        360
+      ],
+      "size": [
+        170,
+        64
+      ]
     }
   ],
   "boundaries": [
     {
       "kind": "security-group",
-      "label": "On the board",
+      "label": "On the camera",
       "wraps": [
         "camera"
       ]
@@ -123,7 +137,7 @@
       "id": "ingest-to-jev",
       "from": "ingest",
       "to": "jev",
-      "label": "slot crop → yes/no",
+      "label": "slot crop, yes or no",
       "variant": "security",
       "fromSide": "bottom",
       "toSide": "top"
@@ -147,6 +161,14 @@
       "to": "app",
       "label": "JSON",
       "variant": "emphasis"
+    },
+    {
+      "id": "api-to-agents",
+      "from": "api",
+      "to": "agents",
+      "label": "MCP",
+      "fromSide": "bottom",
+      "toSide": "top"
     }
   ]
 }

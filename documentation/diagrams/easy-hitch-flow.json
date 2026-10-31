@@ -29,7 +29,7 @@
   "lanes": [
     {
       "id": "board",
-      "label": "XIAO ESP32S3 Sense"
+      "label": "Camera"
     },
     {
       "id": "aws",
@@ -63,7 +63,7 @@
       "col": 0,
       "type": "frontend",
       "label": "Capture",
-      "sublabel": "320×240 greyscale",
+      "sublabel": "1280x960 frame",
       "width": 136
     },
     {
