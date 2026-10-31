@@ -24,9 +24,12 @@ def main():
     parser.add_argument("--once", action="store_true", help="play one morning, then stop")
     args = parser.parse_args()
 
-    cameras = [json.loads(p.read_text()) for p in sorted(CAMERAS.glob("*/camera.json"))]
-    steps = max(len(c["frames"]) for c in cameras)
     client = httpx.Client(base_url=args.url, timeout=60)
+    # Only replay areas the backend lists; a rendered scene can outlive its site entry.
+    listed = {area["id"] for area in client.get("/areas").json()}
+    cameras = [camera for camera in (json.loads(p.read_text()) for p in sorted(CAMERAS.glob("*/camera.json")))
+               if camera["area"] in listed]
+    steps = max(len(c["frames"]) for c in cameras)
     print(f"{len(cameras)} virtual cameras, {steps} frames each, every {args.interval}s")
 
     while True:

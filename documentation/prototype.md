@@ -22,22 +22,24 @@ Blender (code/scene-generator)                    Backend (code/backend)        
 - **Privacy.** Frames are only held in memory; the backend keeps slot states and timestamps.
 - **App.** Flat map of the Endress+Hauser block in Reinach with a pin per bike
   spot showing its free slots (Endress+Hauser blue while any are free, red when
-  full, grey until a camera reports). The six spots are the ones in the
-  challenge photos: three curved shelters and an open stand along the south
-  side, the long shelter at the bus stop on the east side, and the bike garage
-  on the north side. Tapping a pin opens a card with the counts, a 3D view
-  button and cycling directions; pulling the card down shrinks it, pulling
-  again dismisses it. The 3D view (`code/ios/BikeSlot/Spot/`, three.js) shows
-  the spot as if you stood in front of it: its rack with a glowing blue pad on
-  every free slot and a bike on every taken one, over the real photo of the
-  spot, with a fixed, gently swaying camera. Spots without a camera show grey
-  pads. Open `spot.html?id=curved-shelter-a&kind=curved_shelter&slots=10` from
-  that folder in a browser to preview it with made-up slots. The binoculars
-  button opens Apple Look Around at the street next to the spot where Apple has
-  imagery (it needs internet, so it is hidden offline). The south shelter, the
-  corner shelter and the bus stop shelter stand on positions measured in
-  `assets/campus-map/slots.json`; the other three are placed from the challenge
-  map and the photo walk.
+  full, grey until a camera reports). The four spots are the racks marked on
+  the challenge's map: the bike garage on the north side, the long shelter at
+  the bus stop on the east side, and curved shelters on the west (Kägenstrasse)
+  and south (Christoph-Merian-Ring) sides. Tapping a pin opens a card with the
+  counts, a 3D view button and cycling directions; pulling the card down
+  shrinks it, pulling again dismisses it. The 3D view (`code/ios/BikeSlot/Spot/`,
+  three.js) starts above a model of the block, built from
+  `assets/campus-map/source.osm` by `python3 code/scene-generator/site_world.py`,
+  and flies down until you stand in front of the rack: a glowing blue pad on
+  every free slot and a bike on every taken one. Once landed the camera stays
+  put. Spots without a camera show grey pads. Open
+  `spot.html?kind=curved_shelter&slots=10&lat=47.48683&lon=7.59919&heading=0`
+  from that folder in a browser to preview it with made-up slots. The
+  binoculars button opens Apple Look Around at the street next to the spot
+  where Apple has imagery (it needs internet, so it is hidden offline). The bus
+  stop shelter stands on the position measured in
+  `assets/campus-map/slots.json`; the other three are placed from the
+  challenge's map.
 - **Search.** The search bar on the map finds shelters by name and places or
   addresses through Apple Maps (biased to the area around the site). Picking a
   place drops a marker there, frames it with the nearby shelters, and opens the

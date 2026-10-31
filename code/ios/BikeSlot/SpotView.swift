@@ -1,9 +1,9 @@
 import SwiftUI
 import WebKit
 
-/// The 3D view of one bike spot: Spot/spot.html (three.js) draws the rack as seen from the
-/// front, a blue pad on every free slot and a bike on every taken one, over the real photo of
-/// the spot. The camera is fixed, so the view takes no touches.
+/// The 3D view of one bike spot: Spot/spot.html (three.js) flies down into a model of the
+/// Endress+Hauser block and lands in front of the rack, with a blue pad on every free slot and
+/// a bike on every taken one. The camera is fixed once landed, so the view takes no touches.
 struct SpotView: UIViewRepresentable {
     let area: AreaSummary
     let slots: [Slot]
@@ -50,7 +50,9 @@ struct SpotView: UIViewRepresentable {
             let slots = Self.json(state.slots)
             let script: String
             if shownSlots == nil {
-                script = "BikeSpot.show({id: \(Self.json(state.area.id)), kind: \(Self.json(state.area.kind)), "
+                let area = state.area
+                script = "BikeSpot.show({id: \(Self.json(area.id)), kind: \(Self.json(area.kind)), "
+                    + "center: \(Self.json(area.center)), polygon: \(Self.json(area.polygon)), "
                     + "known: \(state.known), slots: \(slots)})"
                 shownSlots = state.slots.count
             } else {

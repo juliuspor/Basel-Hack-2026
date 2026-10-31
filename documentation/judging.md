@@ -37,13 +37,15 @@ code.
 
 **Spot level, not "the stand is full".** The API reports every slot, not just
 a count ([`Slot`](../code/backend/schemas.py#L31-L34),
-[`AreaDetail`](../code/backend/schemas.py#L37-L42)). Tapping a spot shows it
-in 3D as if you stood in front of it: the rack, built in three.js for the
-spot's kind ([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L192-L224) and
-three more), over the real photo of the spot, with a glowing blue pad on every
-free slot and a bike on every taken one
-([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L123-L140)), shown in the app by
-[`SpotView`](../code/ios/BikeSlot/SpotView.swift#L7-L68). The card below keeps
+[`AreaDetail`](../code/backend/schemas.py#L37-L42)). Tapping a spot flies,
+like Google Earth, from above a three.js model of the Endress+Hauser block
+(its buildings, streets and trees from OpenStreetMap) down to where you would
+stand in front of the rack ([`show`](../code/ios/BikeSlot/Spot/spot.js#L178-L225)).
+The rack is built for the spot's kind
+([`curvedShelter`](../code/ios/BikeSlot/Spot/spot.js#L335-L364) and three
+more), with a glowing blue pad on every free slot and a bike on every taken one
+([`makeSlot`](../code/ios/BikeSlot/Spot/spot.js#L238-L255)), shown in the app by
+[`SpotView`](../code/ios/BikeSlot/SpotView.swift#L7-L70). The card below keeps
 only the free count ([`StatusCard`](../code/ios/BikeSlot/AreaDetailScreen.swift#L53-L86)).
 
 **No training data.** The backend draws a numbered tag in front of every slot
@@ -217,8 +219,8 @@ All but the second print nothing.
   [`requirements.txt`](../code/backend/requirements.txt). The deck bundles
   canvas-confetti with its [ISC licence](../assets/pitch/vendor/LICENSE-canvas-confetti).
   The app's 3D spot view bundles three.js r149 with its
-  [MIT licence](../code/ios/BikeSlot/Spot/LICENSE-three.txt); its background
-  photos are the Endress+Hauser challenge photos, credited on screen.
+  [MIT licence](../code/ios/BikeSlot/Spot/LICENSE-three.txt); its 3D world is
+  built from the OpenStreetMap extract and credited on screen.
   The campus map data is OpenStreetMap data under the ODbL, attributed in
   [`campus-data.md`](campus-data.md#attribution). The Endress+Hauser symbol
   comes from endress.com and is used for the sponsor's own challenge. The
@@ -259,7 +261,7 @@ Three ways to show it, from most to least live:
 3. **Fallback.** The phone mock on slide 2 of the deck loops on its own.
 
 A real ESP32-CAM uses the same route as the simulator
-([`client.post`](../code/backend/simulate.py#L40-L41)); it needs a calibration
+([`client.post`](../code/backend/simulate.py#L43-L44)); it needs a calibration
 (`camera.json`) for its view of the shelter.
 
 ## What we checked
@@ -285,8 +287,8 @@ analyzer (no API key), and a physical ESP32-CAM (none connected yet).
 | Gap | Where | Next step |
 |---|---|---|
 | Cameras are simulated | [`simulate.py`](../code/backend/simulate.py) | Connect one ESP32-CAM to `POST /ingest/<area>` and calibrate its view |
-| Three of the six spots (open stand, bus stop shelter, bike garage) have no camera yet, so the app shows their slots as unknown | [`site`](../code/backend/app.py#L57-L79) | Calibrate a camera per spot |
-| The south-west shelter, the open stand and the garage are placed from the challenge map and the photo walk, not measured | [`areas.json`](../code/backend/data/areas.json) | Measure them on site like the ones in [`slots.json`](../assets/campus-map/slots.json) ([how it was mapped](campus-data.md)) |
+| Two of the four spots (bus stop shelter, bike garage) have no camera yet, so the app shows their slots as unknown | [`site`](../code/backend/app.py#L57-L79) | Calibrate a camera per spot |
+| The west shelter, the south shelter and the garage are placed from the challenge's map of the racks, not measured | [`areas.json`](../code/backend/data/areas.json) | Measure them on site like the ones in [`slots.json`](../assets/campus-map/slots.json) ([how it was mapped](campus-data.md)) |
 | State is lost when the backend restarts | [`MemoryStateStore`](../code/backend/storage.py#L40-L54) | DynamoDB behind `StateStore` (planned) |
 | The app allows plain HTTP, to reach a laptop backend | [`NSAllowsArbitraryLoads`](../code/ios/project.yml#L34-L36) | HTTPS once the API is hosted |
 | Tests run locally only, and the app has none | [`tests/`](../code/backend/tests) | Run pytest on every push |

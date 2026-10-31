@@ -21,8 +21,8 @@ struct AreaDetailScreen: View {
         }
         .safeAreaInset(edge: .bottom) {
             VStack(alignment: .trailing, spacing: 6) {
-                // The background photos were provided by Endress+Hauser for the challenge.
-                Text("Photo: Endress+Hauser")
+                // The 3D world is built from OpenStreetMap data (ODbL).
+                Text("Map data © OpenStreetMap contributors")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 8)

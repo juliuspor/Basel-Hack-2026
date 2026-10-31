@@ -5,33 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Bike spot</title>
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #e6edf1; }
-  /* The real photo of the spot, softly out of focus and drifting, behind the 3D rack. */
-  #photo {
-    position: fixed; inset: -8%;
-    background: center / cover no-repeat;
-    filter: blur(5px) saturate(0.95) brightness(1.04);
-    animation: drift 26s ease-in-out infinite alternate;
-    opacity: 0; transition: opacity 0.8s ease;
-  }
-  #photo.ready { opacity: 1; }
-  @keyframes drift {
-    from { transform: scale(1.02) translate3d(-1.5%, 0.8%, 0); }
-    to { transform: scale(1.10) translate3d(1.5%, -0.8%, 0); }
-  }
-  /* Fades the photo towards the app's card at the bottom so the rack stands out. */
-  #veil {
-    position: fixed; inset: 0;
-    background: linear-gradient(to bottom, rgba(236, 242, 245, 0.35) 0%, rgba(236, 242, 245, 0.2) 35%,
-                                rgba(236, 242, 245, 0.45) 72%, rgba(242, 245, 247, 0.95) 100%);
+  /* Sky behind the 3D world; its bottom matches the fog so the horizon blends in. */
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: linear-gradient(to bottom, #8fbfe3 0%, #bcd8ee 45%, #e2ebf1 75%, #e2ebf1 100%);
   }
   canvas { position: fixed; inset: 0; display: block; }
 </style>
 </head>
 <body>
-<div id="photo"></div>
-<div id="veil"></div>
 <script src="three.min.js"></script>
+<script src="site.js"></script>
 <script src="spot.js"></script>
 </body>
 </html>
