@@ -8,6 +8,37 @@ These instructions apply to all agents working anywhere in this repository.
 - Put code documentation in `documentation/`.
 - Put media, presentations, and other assets in `assets/`.
 
+## Judging criteria
+
+BaselHack 2026 judges this repository on seven criteria: innovation, impact,
+technical depth, AI code review (quality of the code and the commit history),
+fair play, pitch, and demo. We adhere to all seven, and
+[`documentation/judging.md`](documentation/judging.md) proves it criterion by
+criterion, with links to the code and the commands that verify it. Keep it
+true:
+
+- Ground every claim. A statement in `documentation/` about what the product
+  does links to the code that does it. Link line ranges as
+  `` [`privacy_mask`](code/backend/providers/base.py#L36-L41) ``: the name in
+  backticks must stay on those lines, and
+  `code/backend/tests/test_docs.py` fails when it does not or when a linked
+  file is gone. Update the links in the commit that moves the code.
+- Separate built from planned. Mark anything that is not in the code, such as
+  real ESP32 cameras, the AWS services, or forecasts, as planned, in the
+  documentation and in the pitch.
+- Keep the demo working. Do not push a change that breaks the run steps in
+  `documentation/prototype.md`, the app's demo mode, or the tests
+  (`cd code/backend && .venv/bin/python -m pytest`).
+- Keep the code reviewable. Use the existing seams (`schemas.py`,
+  `VisionProvider`, `StateStore`, `AssetStore`, `AreaService`), write comments
+  that explain why, read keys from the environment, and commit no secrets and
+  no generated files such as `out/`, `.venv/`, or build folders.
+- Play fair. Respect the challenge's no-gos: never write camera frames to
+  disk, and never identify or track people. Credit third-party code, data,
+  and assets with their licence.
+- When a change affects a criterion (a feature, a dependency, a run step, a
+  privacy property), update `documentation/judging.md` in the same commit.
+
 ## Branches and pull requests
 
 Pull requests are not preferred. Commit and push directly to `main` by
